@@ -10,6 +10,7 @@ class Node {
 public:
     enum class NodeType {
         PROGRAM_STATEMENT,
+        BLOCK_STATEMENT, 
         CONST_DECLARATION,
         VARIABLE_DECLARATION,
         ASSIGNMENT_STATEMENT,
@@ -17,6 +18,7 @@ public:
         IDENTIFIER,
         INTEGER_LITERAL,
         DOUBLE_LITERAL,
+        STRING_LITERAL,
         BINARY_OPERATION,
         UNARY_OPERATION,
         WRITE_STATEMENT,

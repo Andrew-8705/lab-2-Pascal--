@@ -32,6 +32,7 @@ int main() {
                             Write("Incorrect input");
                     end.)";
     Tokenizer tok(code);
-    std::vector<Token> tokens = tok.tokenize();
+    vector<Token> tokens = tok.tokenize();
+    for (Token tk : tokens) cout << tk.value << ' ' << (int)tk.type << '\n';
     return 0;
 }

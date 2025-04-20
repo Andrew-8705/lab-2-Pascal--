@@ -13,6 +13,7 @@ enum class TokenType {
     MULTIPLY,
     DIVIDE,
     ASSIGN,
+    EQUAL,
     SEMICOLON, // ';'
     COLON, // ':' 
     COMMA, // ','
@@ -30,7 +31,11 @@ enum class TokenType {
     KEYWORD_READ,
     LEFT_PAREN,
     RIGHT_PAREN,
+    KEYWORD_INTEGER,
+    KEYWORD_DOUBLE,
+    KEYWORD_STRING,
     STRING_LITERAL,
+    END_OF_PROGRAM,
     UNKNOWN
 };
 

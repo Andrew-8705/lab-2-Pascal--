@@ -18,7 +18,23 @@ private:
     int curLine = 1;
     int curColumn = 0;
 
-    vector<pair<regex, TokenType>> tokenPatterns = {
+    vector<pair<regex, TokenType>> tokenPatterns = { // ключевые слова должны идти первыми
+        {regex(R"(program\b)"), TokenType::KEYWORD_PROGRAM},
+        {regex(R"(const\b)"), TokenType::KEYWORD_CONST},
+        {regex(R"(var\b)"), TokenType::KEYWORD_VAR},
+        {regex(R"(begin\b)"), TokenType::KEYWORD_BEGIN},
+        {regex(R"(end\.)"), TokenType::END_OF_PROGRAM},
+        {regex(R"(end\b)"), TokenType::KEYWORD_END},
+        {regex(R"(if\b)"), TokenType::KEYWORD_IF},
+        {regex(R"(then\b)"), TokenType::KEYWORD_THEN},
+        {regex(R"(else\b)"), TokenType::KEYWORD_ELSE},
+        {regex(R"(mod\b)"), TokenType::KEYWORD_MOD},
+        {regex(R"(div\b)"), TokenType::KEYWORD_DIV},
+        {regex(R"(integer\b)"), TokenType::KEYWORD_INTEGER},
+        {regex(R"(double\b)"), TokenType::KEYWORD_DOUBLE},
+        {regex(R"(Write\b)"), TokenType::KEYWORD_WRITE},
+        {regex(R"(Read\b)"), TokenType::KEYWORD_READ},
+        {regex(R"(\"[^"]*\")"), TokenType::STRING_LITERAL },
         {regex(R"([a-zA-Z_][a-zA-Z0-9_]*)"), TokenType::IDENTIFIER},
         {regex(R"([0-9]+\.[0-9]*)"), TokenType::DOUBLE_LITERAL},
         {regex(R"([0-9]+)"), TokenType::INTEGER_LITERAL},
@@ -27,24 +43,12 @@ private:
         {regex(R"(\*)"), TokenType::MULTIPLY},
         {regex(R"(/)"), TokenType::DIVIDE},
         {regex(R"(:=)"), TokenType::ASSIGN},
+        {regex(R"(=)"), TokenType::EQUAL},
         {regex(R"(;)"), TokenType::SEMICOLON},
         {regex(R"(:)"), TokenType::COLON},
         {regex(R"(,)"), TokenType::COMMA},
         {regex(R"(\()"), TokenType::LEFT_PAREN},
-        {regex(R"(\))"), TokenType::RIGHT_PAREN},
-        {regex(R"(program\b)"), TokenType::KEYWORD_PROGRAM},
-        {regex(R"(const\b)"), TokenType::KEYWORD_CONST},
-        {regex(R"(var\b)"), TokenType::KEYWORD_VAR},
-        {regex(R"(begin\b)"), TokenType::KEYWORD_BEGIN},
-        {regex(R"(end\b)"), TokenType::KEYWORD_END},
-        {regex(R"(if\b)"), TokenType::KEYWORD_IF},
-        {regex(R"(then\b)"), TokenType::KEYWORD_THEN},
-        {regex(R"(else\b)"), TokenType::KEYWORD_ELSE},
-        {regex(R"(mod\b)"), TokenType::KEYWORD_MOD},
-        {regex(R"(div\b)"), TokenType::KEYWORD_DIV},
-        {regex(R"(Write\b)"), TokenType::KEYWORD_WRITE},
-        {regex(R"(Read\b)"), TokenType::KEYWORD_READ},
-        {regex(R"(\"[^"]*\")"), TokenType::STRING_LITERAL }
+        {regex(R"(\))"), TokenType::RIGHT_PAREN}
     };
 
     pair<optional<Token>, int> match() {
@@ -76,8 +80,8 @@ private:
                     string matchedText = match.str();
                     TokenType type = pattern.second;
                     variant<string, double, int> value;
-                    cout << matchedText << '\n';
-                    return { Token(), matchedText.length() };
+                    //cout << matchedText << '\n';
+                    return { Token(pattern.second, matchedText), matchedText.length() };
                 }
             }
         }
