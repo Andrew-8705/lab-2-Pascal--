@@ -22,7 +22,9 @@ public:
         BINARY_OPERATION,
         UNARY_OPERATION,
         WRITE_STATEMENT,
-        READ_STATEMENT
+        READ_STATEMENT,
+        BEGIN_STATEMENT,
+        IDENTIFIER_LIST
     };
 
     NodeType type;

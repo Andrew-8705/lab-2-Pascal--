@@ -20,7 +20,18 @@ int main()
 {
 	try {
 		const std::string code1 = "if counter = 10.5; while (i < 5) { result = result + i; } else output = \"hello\";";
-		string code = "program Example; const Pi: double = 3.1415926; a: integer = 1; MaxCount: integer = 100; end.";
+		string code = R"(program Example; 
+						const 
+							Pi: double = 3.1415926;
+							a: integer = 1; 
+							MaxCount: integer = 100; 
+						var 
+							num1, num2, num3: integer;
+						begin
+							num1 := 1;
+							num2 := 2;
+							num3 := num1;
+						end.)";
 		// Message: string = 'Hello, World!'
 		Tokenizer tok(code);
 		std::vector<Token> tokens = tok.tokenize();
