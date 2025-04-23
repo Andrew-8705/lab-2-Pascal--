@@ -15,18 +15,12 @@ enum class SymbolType {
     DOUBLE
 };
 
-enum class SymbolScope {
-    LOCAL,
-    GLOBAL
-};
-
 struct SymbolTableRecord {
     string name;
     SymbolType type;
     SymbolKind kind;
     variant<double, int> value;
-    SymbolScope scope;
 
-    SymbolTableRecord(string n, SymbolType t, SymbolKind k, variant<double, int> v, SymbolScope s = SymbolScope::GLOBAL)
-        : name(n), type(t), kind(k), value(v), scope(s) {}
+    SymbolTableRecord(string n, SymbolType t, SymbolKind k, variant<double, int> v)
+        : name(n), type(t), kind(k), value(v) {}
 };

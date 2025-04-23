@@ -6,11 +6,13 @@
 #include <exception>
 #include "../Base/Token.h"
 #include "../Base/Node.h"
+#include <list>
 
 using namespace std;
 
 class Parser {
 private:
+    list<list<Node>> ast;
     vector<Token> tokens;
     int curTokenPos;
 
@@ -102,37 +104,28 @@ private:
     Node* parseBeginStatement() {
         require({ TokenType::KEYWORD_BEGIN }, "'begin'");
         Node* beginNode = new Node(Node::NodeType::BEGIN_STATEMENT);
-        while (peek().type != TokenType::KEYWORD_END) {
+        while (peek().type != TokenType::END_OF_PROGRAM && peek().type != TokenType::KEYWORD_END) {
             beginNode->children.push_back(parseStatement());
             if (peek().type == TokenType::SEMICOLON) {
                 pass(); // пропускаем ';'
             }
-            //else if (peek().type != TokenType::KEYWORD_END && peek().type != TokenType::END_OF_PROGRAM) { // если не ';' и не 'end', то ошибка
-            //    throw std::runtime_error("Syntax Error: Expected ';' or 'end' but got " + peek().value);
-            //}
-            
-            if (peek().type == TokenType::END_OF_PROGRAM) {
-                break;
-            }
         }
-        //require({ TokenType::KEYWORD_END }, "'end'"); ???
-        //require({ TokenType::SEMICOLON }, "';'"); ???
         return beginNode;
     }
 
-    // парсим внутри блока begin (основная программа), считаем что нельзя оставлять пустой блок с основной программы
+    // парсим внутри блока begin, считаем что нельзя оставлять пустой блок с основной программы
     Node* parseStatement() {
         if (peek().type == TokenType::IDENTIFIER) { // обрабатываем присваивание переменных
             return parseAssignmentStatement();
         }
         else if (peek().type == TokenType::KEYWORD_WRITE) { // обрабатываем функцию 'write'
-            //return parseWriteStatement();
+            return parseWriteStatement();
         }
         else if (peek().type == TokenType::KEYWORD_READ) { // обрабатываем функцию 'read'
-            //return parseReadStatement();
+            return parseReadStatement();
         }
         else if (peek().type == TokenType::KEYWORD_IF) { // обрабатываем условные операторы
-            //return parseIfStatement();
+            return parseIfStatement();
         }
         else if (peek().type == TokenType::KEYWORD_BEGIN) { // обрабатываем начало условного оператора
             return parseBeginStatement();
@@ -151,7 +144,7 @@ private:
         return assignmentNode;
     }
 
-    /*Node* parseWriteStatement() {
+    Node* parseWriteStatement() {
         require({ TokenType::KEYWORD_WRITE }, "'Write'");
         require({ TokenType::LEFT_PAREN }, "'('");
         Node* writeNode = new Node(Node::NodeType::WRITE_STATEMENT);
@@ -164,7 +157,46 @@ private:
         require({ TokenType::RIGHT_PAREN }, "')'");
         require({ TokenType::SEMICOLON }, "';'");
         return writeNode;
-    }*/
+    }
+
+    Node* parseReadStatement() {
+        require({ TokenType::KEYWORD_READ }, "'Read'");
+        require({ TokenType::LEFT_PAREN }, "'('");
+        Node* readNode = new Node(Node::NodeType::READ_STATEMENT);
+        Node* identifierListNode = parseIdentifierList();
+        readNode->children.push_back(identifierListNode);
+        require({ TokenType::RIGHT_PAREN }, "')'");
+        require({ TokenType::SEMICOLON }, "';'");
+        return readNode;
+    }
+
+    Node* parseIfStatement() {
+        require({ TokenType::KEYWORD_IF }, "'if'");
+        Node* ifNode = new Node(Node::NodeType::IF_STATEMENT);
+        require({ TokenType::LEFT_PAREN }, "'('");
+        ifNode->children.push_back(parseExpression()); // условное выражение
+        require({ TokenType::RIGHT_PAREN }, "')'");
+        require({ TokenType::KEYWORD_THEN }, "'then'");
+
+        if (peek().type == TokenType::KEYWORD_BEGIN) { // ветка if
+            ifNode->children.push_back(parseStatement());
+            require({ TokenType::KEYWORD_END }, "'end'");
+        }
+        else {
+            ifNode->children.push_back(parseStatement());
+        }
+
+        if (match({ TokenType::KEYWORD_ELSE })) { // ветка else
+            if (peek().type == TokenType::KEYWORD_BEGIN) {
+                ifNode->children.push_back(parseStatement());
+                require({ TokenType::KEYWORD_END }, "'end'");
+            }
+            else {
+                ifNode->children.push_back(parseStatement()); 
+            }
+        }
+        return ifNode;
+    }
 
     Node* parseExpression() {
         // пока считаем, что выражение - это просто литерал или идентификатор
