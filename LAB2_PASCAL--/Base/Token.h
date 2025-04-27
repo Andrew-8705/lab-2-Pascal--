@@ -36,7 +36,8 @@ enum class TokenType {
     KEYWORD_STRING,
     STRING_LITERAL,
     END_OF_PROGRAM,
-    UNKNOWN
+    UNKNOWN,
+    END_OF_FILE
 };
 
 struct Token {

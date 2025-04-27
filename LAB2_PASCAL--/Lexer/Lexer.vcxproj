@@ -29,8 +29,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a0c28fc1-5a1b-40c9-b92f-eabbaab71f69}</ProjectGuid>
-    <RootNamespace>Parser</RootNamespace>
+    <ProjectGuid>{f98806c9-788c-4436-82dd-f4c686a1fed2}</ProjectGuid>
+    <RootNamespace>Lexer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -183,7 +183,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="Lexer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Parser.h">
+    <ClInclude Include="Lexer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

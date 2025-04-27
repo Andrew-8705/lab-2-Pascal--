@@ -29,8 +29,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a0c28fc1-5a1b-40c9-b92f-eabbaab71f69}</ProjectGuid>
-    <RootNamespace>Parser</RootNamespace>
+    <ProjectGuid>{a5c6e781-07d3-4e56-b299-6929874bdb59}</ProjectGuid>
+    <RootNamespace>Parserlist</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -183,7 +183,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="Parser_list.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />

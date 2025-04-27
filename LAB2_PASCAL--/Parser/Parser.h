@@ -12,7 +12,6 @@ using namespace std;
 
 class Parser {
 private:
-    list<list<Node>> ast;
     vector<Token> tokens;
     int curTokenPos;
 
@@ -82,7 +81,7 @@ private:
 
     // парсинг блока const
     Node* parseConstDeclarations() {
-        Node* constSectionNode = new Node(Node::NodeType::CONST_DECLARATION);
+        Node* constSectionNode = new Node(Node::NodeType::CONST_SECTION);
         require({ TokenType::KEYWORD_CONST }, "'const'");
         while (peek().type == TokenType::IDENTIFIER) {
             constSectionNode->children.push_back(parseConstDeclaration());
@@ -92,7 +91,7 @@ private:
 
     // парсинг блока var
     Node* parseVarDeclarations() {
-        Node* varSectionNode = new Node(Node::NodeType::VARIABLE_DECLARATION);
+        Node* varSectionNode = new Node(Node::NodeType::VAR_SECTION);
         require({ TokenType::KEYWORD_VAR }, "'var'");
         while (peek().type == TokenType::IDENTIFIER) {
             varSectionNode->children.push_back(parseVarDeclaration());
@@ -103,7 +102,7 @@ private:
     // парсинг блока begin (основная программа + начало блока if/else)
     Node* parseBeginStatement() {
         require({ TokenType::KEYWORD_BEGIN }, "'begin'");
-        Node* beginNode = new Node(Node::NodeType::BEGIN_STATEMENT);
+        Node* beginNode = new Node(Node::NodeType::BEGIN_SECTION);
         while (peek().type != TokenType::END_OF_PROGRAM && peek().type != TokenType::KEYWORD_END) {
             beginNode->children.push_back(parseStatement());
             if (peek().type == TokenType::SEMICOLON) {

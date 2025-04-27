@@ -1,23 +1,12 @@
 #include <iostream>
-#include "Parser.h"
-#include "../Tokenizer/Tokenizer.h"
-#include "../Base/Node.h"
-#include "../Interpreter/Interpreter.h"
-#include <vector>
+#include "Node.h"
+#include "Parser_list.h"
 #include <chrono>
+#include <vector>
+#include "../Base/Token.h"
+#include "../Tokenizer/Tokenizer.h"
+#include "../Lexer/Lexer.h"
 
-using namespace std;
-
-void Print(Node* node) {
-	cout << node->name << ": ";
-	for (Node* c : node->children) {
-		cout << c->name << ' ';
-	}
-	cout << '\n';
-	for (Node* c : node->children) {
-		Print(c);
-	}
-}
 int main()
 {
 	try {
@@ -36,10 +25,10 @@ int main()
 							RESULT := Pi;
 							Read(num3, num1);
 							Write(RESULT);
-							if (b) then
+							if (b mod 2) then
 							begin
 								Write("Результат = ", Res);
-								if (a) then 
+								if (a / b) then 
 								begin
 									a := b;
 								end
@@ -48,8 +37,8 @@ int main()
 									b := a;
 								end
 							end
-							else 
-							begin 
+							else
+							begin
 								d := y;
 								Read(Pi);
 							end
@@ -74,19 +63,49 @@ int main()
                         else
                             Write("Incorrect input");
                     end.)";
+		string code2 = R"(program Example;
+                    const
+                        Pi: double = 3.1415926;
+						a: integer = 1; 
+						MaxCount: integer = 100; 
+					var
+                        num1, num2: integer;
+                        Res: double;
+					begin
+						a := 5;
+						b := 5 * a + c + b;
+						c := a;
+						Write("Введите четное целое число: ");
+						Write("Результат = ", Res);
+						Read(num2);
+						Read(num3, num1);
+						if (b + a) then
+                        begin
+                            Res := num1;
+                            Write("Result = ", Res);
+                        end
+                        else
+						begin
+                            Write("Incorrect input");
+							Read(num2);
+						end
+						a := res;
+						Read(num2);
+					end.)";
+		// проблема с ; решится после добавления нормального парсера
 		// Message: string = 'Hello, World!'
 		auto start_tokenize = std::chrono::high_resolution_clock::now();
-		Tokenizer tok(code1);
-		std::vector<Token> tokens = tok.tokenize();
+		//Tokenizer tok(code);
+		Lexer lexer(code);
+		//std::vector<Token> tokens = tok.tokenize();
+		std::vector<Token> tokens = lexer.tokenize();
 		auto end_tokenize = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> tokenize_time = end_tokenize - start_tokenize;
-		cout << "Time of tokenization: " <<  tokenize_time.count() << '\n';
+		cout << "Time of tokenization: " << tokenize_time.count() << '\n';
 
 		auto start_parse = std::chrono::high_resolution_clock::now();
 		Parser parser(tokens);
-		Node* root = parser.parse();
-		Interpreter inter(root);
-		inter.run();
+		parser.parse();
 		auto end_parse = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> parse_time = end_parse - start_parse;
 		cout << "Time of parsing: " << parse_time.count() << '\n';

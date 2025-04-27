@@ -24,7 +24,10 @@ public:
         WRITE_STATEMENT,
         READ_STATEMENT,
         BEGIN_STATEMENT,
-        IDENTIFIER_LIST
+        IDENTIFIER_LIST,
+        CONST_SECTION,
+        VAR_SECTION,
+        BEGIN_SECTION
     };
 
     NodeType type;

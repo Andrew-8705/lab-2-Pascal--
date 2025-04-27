@@ -1,4 +1,4 @@
-#include "Tokenizer.h"
+#include "Lexer.h"
 #include <iostream>
 #include <string>
 #include <regex>
@@ -32,8 +32,8 @@ int main() {
                         else
                             Write("Incorrect input");
                     end.)";
-    Tokenizer tok(code);
-    vector<Token> tokens = tok.tokenize();
+    Lexer lexer(code);
+    vector<Token> tokens = lexer.tokenize();
     for (Token tk : tokens) cout << tk.value << ' ' << (int)tk.type << '\n';
     return 0;
 }
