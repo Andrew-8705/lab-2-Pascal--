@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parser_list", "Parser_list\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lexer", "Lexer\Lexer.vcxproj", "{F98806C9-788C-4436-82DD-F4C686A1FED2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Postfix", "Postfix\Postfix.vcxproj", "{B527AA99-614C-4618-A29A-282778FF1DB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -125,6 +127,18 @@ Global
 		{F98806C9-788C-4436-82DD-F4C686A1FED2}.Release|x64.Build.0 = Release|x64
 		{F98806C9-788C-4436-82DD-F4C686A1FED2}.Release|x86.ActiveCfg = Release|Win32
 		{F98806C9-788C-4436-82DD-F4C686A1FED2}.Release|x86.Build.0 = Release|Win32
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Debug|ARM64.Build.0 = Debug|ARM64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Debug|x64.ActiveCfg = Debug|x64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Debug|x64.Build.0 = Debug|x64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Debug|x86.ActiveCfg = Debug|Win32
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Debug|x86.Build.0 = Debug|Win32
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Release|ARM64.ActiveCfg = Release|ARM64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Release|ARM64.Build.0 = Release|ARM64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Release|x64.ActiveCfg = Release|x64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Release|x64.Build.0 = Release|x64
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Release|x86.ActiveCfg = Release|Win32
+		{B527AA99-614C-4618-A29A-282778FF1DB3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
