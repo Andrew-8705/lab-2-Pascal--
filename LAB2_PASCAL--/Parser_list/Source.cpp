@@ -17,8 +17,9 @@ int main()
 							MaxCount: integer = 100; 
 						var 
 							num1, num2, num3: integer;
+							num1: integer;
 						begin
-							num1 := 1;
+							num1 := a + b - c;
 							num2 := 2;
 							num3 := num1;
 							Write("¬ведите чЄтное целое число: ", num1, num2, REs);
@@ -68,6 +69,7 @@ int main()
                         Pi: double = 3.1415926;
 						a: integer = 1; 
 						MaxCount: integer = 100; 
+						b: double = 3.1;
 					var
                         num1, num2: integer;
                         Res: double;
@@ -96,7 +98,7 @@ int main()
 		// Message: string = 'Hello, World!'
 		auto start_tokenize = std::chrono::high_resolution_clock::now();
 		//Tokenizer tok(code);
-		Lexer lexer(code);
+		Lexer lexer(code2);
 		//std::vector<Token> tokens = tok.tokenize();
 		std::vector<Token> tokens = lexer.tokenize();
 		auto end_tokenize = std::chrono::high_resolution_clock::now();

@@ -52,7 +52,7 @@ private:
         if (tk.has_value())
             return tk.value();
         cout << "UUUPPPSPS" << '\n';
-        throw std::runtime_error("Expected: " + errorMessage);
+        throw runtime_error("Expected: " + errorMessage);
     }
 
     void addNode(Node* node) {
@@ -100,6 +100,10 @@ private:
         while (peek().type == TokenType::IDENTIFIER) {
             parseConstDeclaration();
         }
+
+        if (peek().type != TokenType::KEYWORD_VAR && peek().type != TokenType::KEYWORD_BEGIN) {
+            throw runtime_error("Syntax Error: Expected 'var' or 'begin' after constant declarations, but got " + peek().value);
+        }
     }
 
     void parseConstDeclaration() {
@@ -117,6 +121,10 @@ private:
         require({ TokenType::KEYWORD_VAR }, "'var'");
         while (peek().type == TokenType::IDENTIFIER) {
             parseVarDeclaration();
+        }
+
+        if (peek().type != TokenType::KEYWORD_BEGIN) {
+            throw runtime_error("Syntax Error: Expected 'begin' after variable declarations, but got " + peek().value);
         }
     }
 
@@ -146,22 +154,22 @@ private:
             return "double";
         else if (match({ TokenType::KEYWORD_STRING }))
             return "string";
-        throw std::runtime_error("Syntax Error: Expected 'integer', 'double' or 'string' but got " + peek().value);
+        throw runtime_error("Syntax Error: Expected 'integer', 'double' or 'string' but got " + peek().value);
     }
 
     variant<int, double, string> parseLiteral() {
         if (auto intToken = match({ TokenType::INTEGER_LITERAL })) {
-            return std::stoi(intToken->value);
+            return stoi(intToken->value);
         }
         else if (auto doubleToken = match({ TokenType::DOUBLE_LITERAL })) {
             return stod(doubleToken->value);
         }
         else if (auto stringToken = match({ TokenType::STRING_LITERAL })) {
-            std::string value = stringToken->value.substr(1, stringToken->value.length() - 2);
+            string value = stringToken->value.substr(1, stringToken->value.length() - 2);
             return value;
         }
         else {
-            throw std::runtime_error("Syntax Error: Expected a literal but got " + peek().value);
+            throw runtime_error("Syntax Error: Expected a literal but got " + peek().value);
         }
     }
 
@@ -189,7 +197,7 @@ private:
             parseIfStatement();
         }
         else {
-            throw std::runtime_error("Syntax Error: Unexpected token at start of statement: " + peek().value);
+            throw runtime_error("Syntax Error: Unexpected token at start of statement: " + peek().value);
         }
     }
 
