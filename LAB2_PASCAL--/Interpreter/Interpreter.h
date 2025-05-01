@@ -66,7 +66,18 @@ private:
 				switch (variables[varName].index()){
 					case 0: case 1:
 					{
-						variables[varName] = Evaluator::evaluate(assignNode->expression, variables, constants);
+						try
+						{
+							double assign = Evaluator::evaluate(assignNode->expression, variables, constants);
+							if (variables[varName].index() == 0)
+								variables[varName] = static_cast<int>(assign);
+							else
+								variables[varName] = assign;
+						}
+						catch (exception& exc)
+						{
+							throw runtime_error("Failed to assign " + varName + ": " + exc.what());
+						}
 						break;
 					}
 					case 2:
@@ -80,7 +91,8 @@ private:
 						{
 							variables[varName] = identifier;
 						}
-						else if (assignNode->expression[0].type == TokenType::IDENTIFIER){
+						else if (assignNode->expression[0].type == TokenType::IDENTIFIER)
+						{
 							if (variables.find(identifier) != variables.end()) 
 							{
 								variables[varName] = variables[identifier];
@@ -207,7 +219,7 @@ private:
 								variables[listItem] = input;
 							}
 							else {
-								throw std::runtime_error("Unsupported variable type for input: " + listItem);
+								throw runtime_error("Unsupported variable type for input: " + listItem);
 							}
 						}, variables[listItem]);
 					}
