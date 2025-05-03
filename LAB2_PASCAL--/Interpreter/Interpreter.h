@@ -66,49 +66,25 @@ private:
 				switch (variables[varName].index()){
 					case 0: case 1:
 					{
-						try
-						{
-							double assign = Evaluator::evaluate(assignNode->expression, variables, constants);
+						try{
+							double assign = Evaluator::evaluate_numeric(assignNode->expression, variables, constants);
 							if (variables[varName].index() == 0)
 								variables[varName] = static_cast<int>(assign);
 							else
 								variables[varName] = assign;
 						}
-						catch (exception& exc)
-						{
+						catch (exception& exc){
 							throw runtime_error("Failed to assign " + varName + ": " + exc.what());
 						}
 						break;
 					}
 					case 2:
 					{
-						if (assignNode->expression.size() > 1) 
-						{
-							throw runtime_error("Cannot assign expressions to strings: " + varName);
+						try {
+							variables[varName] = Evaluator::evaluate_string(assignNode->expression, variables, constants);
 						}
-						string identifier = assignNode->expression[0].value;
-						if (assignNode->expression[0].type == TokenType::STRING_LITERAL) 
-						{
-							variables[varName] = identifier;
-						}
-						else if (assignNode->expression[0].type == TokenType::IDENTIFIER)
-						{
-							if (variables.find(identifier) != variables.end()) 
-							{
-								variables[varName] = variables[identifier];
-							}
-							else if (constants.find(identifier) != constants.end()) 
-							{
-								variables[varName] = constants[identifier];
-							}
-							else 
-							{
-								throw runtime_error("Undeclared identifier: " + identifier + " in assignment to " + varName);
-							}
-						}
-						else 
-						{
-							throw runtime_error("Invalid assignment: " + varName);
+						catch (const exception& exc) {
+							throw runtime_error("Failed to assign " + varName + ": " + exc.what());
 						}
 						break;
 					}
@@ -146,11 +122,18 @@ private:
 							{
 								try
 								{
-									record += to_string(Evaluator::evaluate(expression, variables, constants));
+									record += to_string(Evaluator::evaluate_numeric(expression, variables, constants));
 								}
 								catch (exception& exc)
 								{
-									throw runtime_error("Invalid Write Arguments" + string(exc.what()));
+									try 
+									{
+										record += Evaluator::evaluate_string(expression, variables, constants);
+									}
+									catch (exception& exc)
+									{
+										throw runtime_error("Invalid Write Arguments" + string(exc.what()));
+									}
 								}
 							}
 							if (last_comma)
@@ -180,11 +163,18 @@ private:
 				{
 					try
 					{
-						record += to_string(Evaluator::evaluate(expression, variables, constants));
+						record += to_string(Evaluator::evaluate_numeric(expression, variables, constants));
 					}
 					catch (exception& exc)
 					{
-						throw runtime_error("Invalid Write Arguments" + string(exc.what()));
+						try
+						{
+							record += Evaluator::evaluate_string(expression, variables, constants);
+						}
+						catch (exception& exc)
+						{
+							throw runtime_error("Invalid Write Arguments" + string(exc.what()));
+						}
 					}
 				}
 				cout << record << endl;
@@ -236,7 +226,78 @@ private:
 			case Node::NodeType::IF_STATEMENT:
 			{
 				const IfStatementNode* ifNode = static_cast<const IfStatementNode*>(node);
+				Token sign;
+				vector<Token> left_expression;
+				vector<Token> right_expression;
+				bool after_sign = false;
+				for (auto& token : ifNode->condition)//разбор
+				{
+					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL)//NON_EQUAL токен я сам добавил, он не обрабатывается
+					{
+						if (after_sign)//два знака
+							throw runtime_error("Invalid condition expression");
+						sign = token;
+						after_sign = true;
+						continue;
+					}
+					after_sign ? right_expression.push_back(token) : left_expression.push_back(token);
+				}
+				variant<double, string> leftExRes;
+				variant<double, string> rightExRes;
+				try
+				{
+					leftExRes = Evaluator::evaluate_numeric(left_expression, variables, constants);
+					rightExRes = Evaluator::evaluate_numeric(right_expression, variables, constants);
+				}
+				catch (exception exc)
+				{
+					try
+					{
+						leftExRes = Evaluator::evaluate_string(left_expression, variables, constants);
+						rightExRes = Evaluator::evaluate_string(right_expression, variables, constants);
+					}
+					catch (const exception& exc)
+					{
+						throw runtime_error("Invalid consition expression: " + string(exc.what()));
+					}
+				}
+				
+				bool is_equal = visit([](auto&& left, auto&& right) -> bool //на случай, если левое выражение число, а правое строка
+				{
+					using LeftType = decay_t<decltype(left)>;
+					using RightType = decay_t<decltype(right)>;
+					if constexpr (is_same_v<LeftType, RightType>) 
+					{
+						return left == right;
+					}
+					else 
+					{
+						return false;
+					}
+				}, leftExRes, rightExRes);
 
+				if (sign.type == TokenType::UNKNOWN)
+					throw runtime_error("Expected comparison operator");
+
+				switch (sign.type)
+				{
+					case TokenType::EQUAL:
+					{
+						is_equal ? executeBlock(ifNode->thenStatement) : executeBlock(ifNode->elseStatement);
+						break;
+					}
+					case TokenType::NON_EQUAL:
+					{
+						is_equal ? executeBlock(ifNode->elseStatement) : executeBlock(ifNode->thenStatement);
+						break;
+					}
+					default:
+					{
+						throw runtime_error("How?");
+						break;
+					}
+				}
+				break;
 			}
 		}
 	}

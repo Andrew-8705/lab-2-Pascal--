@@ -14,6 +14,7 @@ enum class TokenType {
     DIVIDE,
     ASSIGN,
     EQUAL,
+    NON_EQUAL,
     SEMICOLON, // ';'
     COLON, // ':' 
     COMMA, // ','
