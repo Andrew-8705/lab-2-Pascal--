@@ -184,8 +184,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Node.h" />
-    <ClInclude Include="SymbolTable.h" />
-    <ClInclude Include="SymbolTableRecord.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

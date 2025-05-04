@@ -13,7 +13,7 @@ using namespace std;
 class Interpreter {
 private:
 	list<list<Node*>> ast;
-	unordered_map<string, variant<int, double, string>> variables; // можно либо сразу использовать unordered_map, либо использовать SymbolTable из Base 
+	unordered_map<string, variant<int, double, string>> variables;
 	unordered_map<string, variant<int, double, string>> constants;
 
 	void executeBlock(const list<Node*>& block) {
