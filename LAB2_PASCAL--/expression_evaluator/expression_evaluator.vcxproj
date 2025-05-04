@@ -24,6 +24,7 @@
     <ProjectGuid>{add63e4a-699e-4916-afe5-fa86f79e5dae}</ProjectGuid>
     <RootNamespace>expressionevaluator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>expression_evaluator</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

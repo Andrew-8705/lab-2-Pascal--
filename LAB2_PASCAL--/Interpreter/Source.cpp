@@ -1,12 +1,10 @@
 #include "../Interpreter/Interpreter.h"
 #include "../Lexer/Lexer.h"
-#include "../Parser_list/Parser_list.h"
+#include "../Parser/Parser.h"
 #include <iostream>
 #include <string>
-#include <regex>
 #include <vector>
 #include <variant>
-#include <chrono>
 
 
 int main()
@@ -96,24 +94,13 @@ int main()
 						a := res;
 						Read(num2);
 					end.)";
-		// проблема с ; решится после добавления нормального парсера
-		// Message: string = 'Hello, World!'
-		auto start_tokenize = std::chrono::high_resolution_clock::now();
-		//Tokenizer tok(code);
-		Lexer lexer(code2);
-		//std::vector<Token> tokens = tok.tokenize();
-		std::vector<Token> tokens = lexer.tokenize();
-		auto end_tokenize = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> tokenize_time = end_tokenize - start_tokenize;
-		cout << "Time of tokenization: " << tokenize_time.count() << '\n';
 
-		auto start_parse = std::chrono::high_resolution_clock::now();
+		Lexer lexer(code2);
+		const vector<Token> tokens = lexer.tokenize();
 		Parser parser(tokens);
-		parser.parse();
-		auto end_parse = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> parse_time = end_parse - start_parse;
-		cout << "Time of parsing: " << parse_time.count() << '\n';
-		Interpreter interp()
+		list<list<Node*>>& ast = parser.parse();
+		Interpreter inter(ast);
+		inter.run();
 	}
 	catch (const std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;

@@ -5,7 +5,6 @@
 #include <optional>
 #include <stdexcept>
 #include <exception>
-#include <optional>
 #include "../Base/Token.h"
 #include "../Base/Node.h"
 #include <list>
@@ -207,6 +206,9 @@ private:
         require({ TokenType::ASSIGN }, "':='");
         while (peek().type != TokenType::SEMICOLON)
             assignNode->expression.push_back(pass());
+        if (assignNode->expression.empty()) {
+            throw runtime_error("Syntax Error: Expected an expression after ':=' for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
+        }
         currentBlock->push_back(assignNode);
         require({ TokenType::SEMICOLON }, "';'");
     }
@@ -278,7 +280,8 @@ private:
 public:
     Parser(const vector<Token>& tkns) : tokens(tkns) {};
 
-    void parse() {
+    list<list<Node*>>& parse() {
         parseProgram();
+        return ast;
     }
 };

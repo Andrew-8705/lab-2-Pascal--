@@ -26,11 +26,18 @@
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Evaluator.h" />
+    <ClInclude Include="Expression.h" />
+    <ClInclude Include="ExpressionValidator.h" />
+    <ClInclude Include="PostfixCalculator.h" />
+    <ClInclude Include="PostfixConverter.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b527aa99-614c-4618-a29a-282778ff1db3}</ProjectGuid>
-    <RootNamespace>Postfix</RootNamespace>
+    <ProjectGuid>{b7fe48dd-6fb0-4172-8015-6c3acc2c9894}</ProjectGuid>
+    <RootNamespace>ExpressionEvaluator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -182,10 +189,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="PostfixCalculator.h" />
-    <ClInclude Include="PostfixConverter.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

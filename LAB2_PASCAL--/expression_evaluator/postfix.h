@@ -45,7 +45,7 @@ public:
 };
 
 
-class Parser {
+class Parser1 {
 public:
     static vector<string> Parse(const string& str);
 };

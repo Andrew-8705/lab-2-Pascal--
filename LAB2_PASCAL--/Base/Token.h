@@ -8,6 +8,7 @@ enum class TokenType {
     IDENTIFIER,
     INTEGER_LITERAL,
     DOUBLE_LITERAL,
+    STRING_LITERAL,
     PLUS,
     MINUS,
     MULTIPLY,
@@ -35,7 +36,6 @@ enum class TokenType {
     KEYWORD_INTEGER,
     KEYWORD_DOUBLE,
     KEYWORD_STRING,
-    STRING_LITERAL,
     END_OF_PROGRAM,
     UNKNOWN,
     END_OF_FILE

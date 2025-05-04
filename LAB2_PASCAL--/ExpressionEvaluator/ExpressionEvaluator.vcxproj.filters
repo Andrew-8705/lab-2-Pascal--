@@ -15,10 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Expression.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="PostfixConverter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="PostfixCalculator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpressionValidator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluator.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
