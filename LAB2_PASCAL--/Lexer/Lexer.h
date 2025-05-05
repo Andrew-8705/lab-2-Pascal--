@@ -88,7 +88,6 @@ private:
                 }
                 else if (currentChar == '"') {
                     state = LexerState::STRING;
-                    currentLexeme += currentChar;
                     curPos++;
                     curColumn++;
                 }
@@ -174,13 +173,13 @@ private:
                 break;
 
             case LexerState::STRING:
-                currentLexeme += currentChar;
                 curPos++;
                 curColumn++;
                 if (currentChar == '"') {
                     state = LexerState::START;
                     return createToken(TokenType::STRING_LITERAL, currentLexeme);
                 }
+                currentLexeme += currentChar;
                 if (curPos >= sourceCode.length()) {
                     throw runtime_error("Error: Unterminated string literal at line " + to_string(curLine) + ", column " + to_string(tokenStartColumn));
                 }

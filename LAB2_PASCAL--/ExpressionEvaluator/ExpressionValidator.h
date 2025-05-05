@@ -14,7 +14,8 @@ class ExpressionValidator {
         if (expr.size() == 1 && expr[0].type == TokenType::STRING_LITERAL) return;
         for (Token tk : expr) {
             if (tk.type != TokenType::INTEGER_LITERAL && tk.type != TokenType::DOUBLE_LITERAL && 
-                tk.type != TokenType::IDENTIFIER && !IsOperator(tk.value))
+                tk.type != TokenType::IDENTIFIER && !IsOperator(tk.value) && tk.type != TokenType::LEFT_PAREN &&
+                tk.type != TokenType::RIGHT_PAREN)
                 throw runtime_error("Invalid character in expression");
         }
     }
@@ -39,13 +40,7 @@ class ExpressionValidator {
 
 public:
     static bool IsOperator(std::string op) {
-        if (op == "+") return true;
-        else if (op == "-") return true;
-        else if (op == "*") return true;
-        else if (op == "/") return true;
-        else if (op == "mod") return true;
-        else if (op == "div") return true;
-        else return false;
+        return op == "+" || op == "-" || op == "*" || op == "/" || op == "mod" || op == "div";
     }
 
     static void Validate(vector<Token>& expr) {

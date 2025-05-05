@@ -6,7 +6,8 @@
 #include <variant>
 #include <string>
 #include <unordered_map>
-#include "../expression_evaluator/evaluator.h"
+//#include "../expression_evaluator/evaluator.h"
+#include "../ExpressionEvaluator/Evaluator.h"
 
 using namespace std;
 
@@ -55,14 +56,16 @@ private:
 			{
 				const AssignmentStatementNode* assignNode = static_cast<const AssignmentStatementNode*>(node);
 				string varName = assignNode->variableName;
+
+				if (constants.count(varName))
+				{
+					throw runtime_error("Assignment to constant: " + varName);
+				}
 				if (variables.find(varName) == variables.end()) 
 				{
 					throw runtime_error("Undeclared variable assignment: " + varName);
 				}
-				if (constants.count(varName)) 
-				{
-					throw runtime_error("Assignment to constant: " + varName);
-				}
+
 				switch (variables[varName].index()){
 					case 0: case 1:
 					{
@@ -106,9 +109,8 @@ private:
 						case TokenType::STRING_LITERAL:
 						{
 							if (!expression.empty())
-								throw runtime_error("Invalid Write Arguments");
-							if (expression.empty() && !last_comma)
-								throw runtime_error("Invalid Write Arguments");
+								throw runtime_error("Syntax Error in Write statement: String literal cannot follow an expression without a comma separator");
+					
 							record += token.value;
 							last_comma = false;
 							is_first_token = false;
@@ -116,8 +118,8 @@ private:
 						}
 						case TokenType::COMMA:
 						{
-							if(is_first_token)
-								throw runtime_error("Invalid Write Arguments");
+							if (is_first_token)
+								throw runtime_error("Syntax Error in Write statement: The argument list cannot start with a comma");
 							if (!expression.empty())
 							{
 								try
@@ -132,18 +134,26 @@ private:
 									}
 									catch (exception& exc)
 									{
-										throw runtime_error("Invalid Write Arguments" + string(exc.what()));
+										throw runtime_error("Runtime Error in Write statement: Could not evaluate the expression: " + string(exc.what()));
 									}
 								}
 							}
 							if (last_comma)
-								throw runtime_error("Invalid Write Arguments");
+								throw runtime_error("Syntax Error in Write statement: Multiple consecutive commas are not allowed");
 							expression.clear();
 							last_comma = true;
 							is_first_token = false;
 							break;
 						}
-						case TokenType::IDENTIFIER: case TokenType::INTEGER_LITERAL: case TokenType::DOUBLE_LITERAL: case TokenType::PLUS: case TokenType::MINUS: case TokenType::MULTIPLY: case TokenType::DIVIDE:
+						case TokenType::IDENTIFIER: 
+						case TokenType::INTEGER_LITERAL: 
+						case TokenType::DOUBLE_LITERAL: 
+						case TokenType::PLUS: 
+						case TokenType::MINUS: 
+						case TokenType::MULTIPLY: 
+						case TokenType::DIVIDE:
+						case TokenType::KEYWORD_DIV:
+						case TokenType::KEYWORD_MOD:
 						{
 							expression.push_back(token);
 							last_comma = false;
@@ -152,13 +162,13 @@ private:
 						}
 						default:
 						{
-							throw runtime_error("Invalid Write Arguments");
+							throw runtime_error("Syntax Error in Write statement: Unexpected token '" + token.value + "' in the argument list");
 							break;
 						}
 					}
 				}
-				if(expression.empty() && last_comma)
-					throw runtime_error("Invalid Write Arguments");
+				if (expression.empty() && last_comma)
+					throw runtime_error("Syntax Error in Write statement: The argument list cannot end with a comma");
 				else if (!expression.empty())
 				{
 					try
@@ -173,11 +183,11 @@ private:
 						}
 						catch (exception& exc)
 						{
-							throw runtime_error("Invalid Write Arguments" + string(exc.what()));
+							throw runtime_error("Runtime Error in Write statement: Could not evaluate the expression: " + string(exc.what()));
 						}
 					}
 				}
-				cout << record << endl;
+				cout << record << '\n';
 				break;
 			}
 
@@ -230,12 +240,12 @@ private:
 				vector<Token> left_expression;
 				vector<Token> right_expression;
 				bool after_sign = false;
-				for (auto& token : ifNode->condition)//разбор
+				for (auto& token : ifNode->condition) // разбор
 				{
-					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL)//NON_EQUAL токен я сам добавил, он не обрабатывается
+					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL)
 					{
-						if (after_sign)//два знака
-							throw runtime_error("Invalid condition expression");
+						if (after_sign) // два знака
+							throw runtime_error("Syntax Error in conditional expression: Multiple comparison operators ('=' or '!=') found");
 						sign = token;
 						after_sign = true;
 						continue;
@@ -262,7 +272,7 @@ private:
 					}
 				}
 				
-				bool is_equal = visit([](auto&& left, auto&& right) -> bool //на случай, если левое выражение число, а правое строка
+				bool is_equal = visit([](auto&& left, auto&& right) -> bool // на случай, если левое выражение число, а правое строка
 				{
 					using LeftType = decay_t<decltype(left)>;
 					using RightType = decay_t<decltype(right)>;
@@ -291,7 +301,8 @@ private:
 						is_equal ? executeBlock(ifNode->elseStatement) : executeBlock(ifNode->thenStatement);
 						break;
 					}
-					default:
+					// TODO: реализовать другие операторы сравнения
+					default: 
 					{
 						throw runtime_error("How?");
 						break;
@@ -307,7 +318,7 @@ public:
 
 	void run() {
 		if (!ast.empty()) {
-			cout << "Program'" << static_cast<ProgramNode*>(ast.front().front())->programName << "' started" << '\n';
+			cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' started" << '\n';
 			auto it = next(ast.begin());
 
 			while (it != ast.end()) {

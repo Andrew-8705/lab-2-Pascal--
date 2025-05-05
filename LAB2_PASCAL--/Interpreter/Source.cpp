@@ -72,16 +72,17 @@ int main()
 						b: double = 3.1;
 					var
                         num1, num2: integer;
+						num3: integer;
                         Res: double;
 					begin
-						a := 5;
-						b := 5 * a + c + b;
-						c := a;
-						Write("¬ведите четное целое число: ");
-						Write("–езультат = ", Res);
+						num1 := 5.0;
+						num2 := 5 * a + b;
+						num1 := a;
+						Write("Enter an even integer: ");
+						Write("Result = ", Res);
 						Read(num2);
 						Read(num3, num1);
-						if (b + a) then
+						if (b + a = 0) then
                         begin
                             Res := num1;
                             Write("Result = ", Res);
@@ -91,11 +92,33 @@ int main()
                             Write("Incorrect input");
 							Read(num2);
 						end
-						a := res;
+						Res := a;
 						Read(num2);
 					end.)";
 
-		Lexer lexer(code2);
+		string sample = R"(program Example;
+						const
+							Pi: double = 3.1415926;
+						var
+							num1, num2: integer;
+							Res, d: double;
+						begin
+							num1 := 5;
+							Write("Enter an even integer: ");
+							Read(num2);
+							Write("Enter a real number: ");
+							Read(d);
+							if (num2 mod 2 = 0) then
+							begin
+								Res := (num1 - num2 * 5 div 2) / (d * 2);
+								Write("Result = ", Res);
+							end
+							else
+							begin
+								Write("Incorrect input");
+							end
+						end.)";
+		Lexer lexer(sample);
 		const vector<Token> tokens = lexer.tokenize();
 		Parser parser(tokens);
 		list<list<Node*>>& ast = parser.parse();

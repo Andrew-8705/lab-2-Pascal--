@@ -31,7 +31,7 @@ public:
     vector<string> GetOperands() const { return operands; };
 
     double Calculate(const map<string, double>& values) {
-        PostfixCalculator::Calculate(postfix, values);
+        return PostfixCalculator::Calculate(postfix, values);
     }
 
     // TODO: сделать обработку случая присваивания переменной одной строки
