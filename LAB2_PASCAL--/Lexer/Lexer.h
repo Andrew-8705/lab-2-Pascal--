@@ -108,6 +108,9 @@ private:
                     case '*': return createToken(TokenType::MULTIPLY, currentLexeme);
                     case '/': return createToken(TokenType::DIVIDE, currentLexeme);
                     case '=': return createToken(TokenType::EQUAL, currentLexeme);
+                    case '!': return createToken(TokenType::NON_EQUAL, currentLexeme);
+                    case '>': return createToken(TokenType::GREATER, currentLexeme);
+                    case '<': return createToken(TokenType::LESS, currentLexeme);
                     case ';': return createToken(TokenType::SEMICOLON, currentLexeme);
                     case ',': return createToken(TokenType::COMMA, currentLexeme);
                     case '(': return createToken(TokenType::LEFT_PAREN, currentLexeme);

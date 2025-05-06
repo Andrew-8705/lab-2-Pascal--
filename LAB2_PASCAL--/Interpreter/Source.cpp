@@ -132,7 +132,7 @@ int main()
 						begin
 							num1 := 5;
 							num2 := 10;
-							if (num1 = num2) then
+							if (num1 ! num2) then
 							begin
 								Write("then");
 							end
