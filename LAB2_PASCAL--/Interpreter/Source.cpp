@@ -104,7 +104,7 @@ int main()
 							Res, d: double;
 						begin
 							num1 := 5;
-							Write("Enter an even integer: ");
+							Write("Enter an", " even integer: ", num1);
 							Read(num2);
 							Write("Enter a real number: ");
 							Read(d);
@@ -118,7 +118,30 @@ int main()
 								Write("Incorrect input");
 							end
 						end.)";
-		Lexer lexer(sample);
+		string sample2 = R"(program Example;
+						var
+							str: string;
+						begin
+							str := "borow";
+							Write("Here is: ", str);
+						end.)";
+		string sample3 = R"(program Example;
+						var
+							num1: integer;
+							num2: integer;
+						begin
+							num1 := 5;
+							num2 := 10;
+							if (num1 = num2) then
+							begin
+								Write("then");
+							end
+							else
+							begin
+								Write("else");
+							end
+						end.)";
+		Lexer lexer(sample3);
 		const vector<Token> tokens = lexer.tokenize();
 		Parser parser(tokens);
 		list<list<Node*>>& ast = parser.parse();

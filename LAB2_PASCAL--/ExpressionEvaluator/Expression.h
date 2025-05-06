@@ -33,7 +33,5 @@ public:
     double Calculate(const map<string, double>& values) {
         return PostfixCalculator::Calculate(postfix, values);
     }
-
-    // TODO: сделать обработку случая присваивания переменной одной строки
 };
 

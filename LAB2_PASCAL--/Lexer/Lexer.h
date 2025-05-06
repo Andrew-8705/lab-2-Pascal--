@@ -46,6 +46,7 @@ private:
         if (lexeme == "div") return TokenType::KEYWORD_DIV;
         if (lexeme == "integer") return TokenType::KEYWORD_INTEGER;
         if (lexeme == "double") return TokenType::KEYWORD_DOUBLE;
+        if (lexeme == "string") return TokenType::KEYWORD_STRING;
         if (lexeme == "Write") return TokenType::KEYWORD_WRITE;
         if (lexeme == "Read") return TokenType::KEYWORD_READ;
         return TokenType::UNKNOWN;

@@ -110,7 +110,6 @@ private:
 						{
 							if (!expression.empty())
 								throw runtime_error("Syntax Error in Write statement: String literal cannot follow an expression without a comma separator");
-					
 							record += token.value;
 							last_comma = false;
 							is_first_token = false;
@@ -242,7 +241,7 @@ private:
 				bool after_sign = false;
 				for (auto& token : ifNode->condition) // разбор
 				{
-					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL)
+					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER || token.type == TokenType::LESS)
 					{
 						if (after_sign) // два знака
 							throw runtime_error("Syntax Error in conditional expression: Multiple comparison operators ('=' or '!=') found");
@@ -252,6 +251,7 @@ private:
 					}
 					after_sign ? right_expression.push_back(token) : left_expression.push_back(token);
 				}
+
 				variant<double, string> leftExRes;
 				variant<double, string> rightExRes;
 				try
@@ -272,42 +272,55 @@ private:
 					}
 				}
 				
-				bool is_equal = visit([](auto&& left, auto&& right) -> bool // на случай, если левое выражение число, а правое строка
+				bool compare = visit([&sign](auto&& left, auto&& right) -> bool // на случай, если левое выражение число, а правое строка
 				{
 					using LeftType = decay_t<decltype(left)>;
 					using RightType = decay_t<decltype(right)>;
 					if constexpr (is_same_v<LeftType, RightType>) 
 					{
-						return left == right;
+						switch (sign.type)
+						{
+							case TokenType::GREATER:
+							{
+								if constexpr (is_same_v<LeftType, string>)
+									throw runtime_error("Cannot compare strings using <");
+								return left > right;
+								break;
+							}
+							case TokenType::LESS:
+							{
+								if constexpr (is_same_v<LeftType, string>)
+									throw runtime_error("Cannot compare strings using <");
+								return left < right;
+								break;
+							}
+							case TokenType::EQUAL:
+							{
+								return left == right;
+								break;
+							}
+							case TokenType::NON_EQUAL:
+							{
+								return left != right;
+								break;
+							}
+							default:
+							{
+								throw runtime_error("How?");
+								break;
+							}
+						}
 					}
 					else 
 					{
-						return false;
+						throw runtime_error("Type mismatch error in conditional expression");
 					}
 				}, leftExRes, rightExRes);
 
 				if (sign.type == TokenType::UNKNOWN)
 					throw runtime_error("Expected comparison operator");
 
-				switch (sign.type)
-				{
-					case TokenType::EQUAL:
-					{
-						is_equal ? executeBlock(ifNode->thenStatement) : executeBlock(ifNode->elseStatement);
-						break;
-					}
-					case TokenType::NON_EQUAL:
-					{
-						is_equal ? executeBlock(ifNode->elseStatement) : executeBlock(ifNode->thenStatement);
-						break;
-					}
-					// TODO: реализовать другие операторы сравнения
-					default: 
-					{
-						throw runtime_error("How?");
-						break;
-					}
-				}
+				compare ? executeBlock(ifNode->thenStatement) : executeBlock(ifNode->elseStatement);
 				break;
 			}
 		}

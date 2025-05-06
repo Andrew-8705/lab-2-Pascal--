@@ -16,6 +16,8 @@ enum class TokenType {
     ASSIGN,
     EQUAL,
     NON_EQUAL,
+    LESS,//TODO
+    GREATER,// TODO
     SEMICOLON, // ';'
     COLON, // ':' 
     COMMA, // ','

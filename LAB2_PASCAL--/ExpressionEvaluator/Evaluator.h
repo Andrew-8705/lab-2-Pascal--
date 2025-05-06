@@ -21,24 +21,24 @@ public:
 		map<string, double> values;
 
 		auto get_double_value = [&](const string& name, const variant<int, double, string>& var) -> double //эта штука достает double из variant <...,double,....>
-			{
-				return visit([&](auto&& arg) -> double
-					{
-						using T = decay_t<decltype(arg)>;
-						if constexpr (is_same_v<T, int>)
-						{
-							return static_cast<double>(arg); // вероятно приведение к double хуже чем хранение variant<int, double>
-						}
-						else if constexpr (is_same_v<T, double>)
-						{
-							return arg;
-						}
-						else
-						{
-							throw runtime_error("String variable in arithmetic expression: " + name);
-						}
-					}, var);
-			};
+		{
+			return visit([&](auto&& arg) -> double
+			{	
+				using T = decay_t<decltype(arg)>;
+				if constexpr (is_same_v<T, int>)
+				{
+					return static_cast<double>(arg); // вероятно приведение к double хуже чем хранение variant<int, double>
+				}
+				else if constexpr (is_same_v<T, double>)
+				{
+					return arg;
+				}
+				else
+				{
+					throw runtime_error("String variable in arithmetic expression: " + name);
+				}
+			}, var);
+		};
 
 		for (string var : vars) {
 			if (variables.find(var) != variables.end())
