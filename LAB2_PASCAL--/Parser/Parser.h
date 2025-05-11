@@ -270,9 +270,9 @@ private:
             }
             require({ TokenType::KEYWORD_END }, "'end'");
         }
-        /*else { // пока нет обработки случая когда в ветке if/else одна строка и можно не писать begin-end
+        else {
             parseStatement();
-        }*/
+        }
         currentBlock = previousBlock;
         return block;
     }

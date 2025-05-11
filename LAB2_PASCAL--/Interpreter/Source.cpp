@@ -141,7 +141,16 @@ int main()
 								Write("else");
 							end
 						end.)";
-		Lexer lexer(sample3);
+		string sample4 = R"( program Example;
+						begin
+							if (1 = 2) then
+								Write("YES");
+								Write("YES");
+								Write("YES");
+								Write("YES");
+						end.
+						)";
+		Lexer lexer(sample4);
 		const vector<Token> tokens = lexer.tokenize();
 		Parser parser(tokens);
 		list<list<Node*>>& ast = parser.parse();

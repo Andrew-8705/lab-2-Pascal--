@@ -11,7 +11,6 @@ using namespace std;
 
 class ExpressionValidator {
     static void CheckValidCharacters(vector<Token>& expr) {
-        if (expr.size() == 1 && expr[0].type == TokenType::STRING_LITERAL) return;
         for (Token tk : expr) {
             if (tk.type != TokenType::INTEGER_LITERAL && tk.type != TokenType::DOUBLE_LITERAL && 
                 tk.type != TokenType::IDENTIFIER && !IsOperator(tk.value) && tk.type != TokenType::LEFT_PAREN &&
