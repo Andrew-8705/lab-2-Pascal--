@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parser", "Parser\Parser.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExpressionEvaluator", "ExpressionEvaluator\ExpressionEvaluator.vcxproj", "{B7FE48DD-6FB0-4172-8015-6C3ACC2C9894}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{75EC43C2-A753-443E-A2FC-C7D86392140C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -111,6 +113,18 @@ Global
 		{B7FE48DD-6FB0-4172-8015-6C3ACC2C9894}.Release|x64.Build.0 = Release|x64
 		{B7FE48DD-6FB0-4172-8015-6C3ACC2C9894}.Release|x86.ActiveCfg = Release|Win32
 		{B7FE48DD-6FB0-4172-8015-6C3ACC2C9894}.Release|x86.Build.0 = Release|Win32
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Debug|ARM64.Build.0 = Debug|ARM64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Debug|x64.ActiveCfg = Debug|x64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Debug|x64.Build.0 = Debug|x64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Debug|x86.ActiveCfg = Debug|Win32
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Debug|x86.Build.0 = Debug|Win32
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Release|ARM64.ActiveCfg = Release|ARM64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Release|ARM64.Build.0 = Release|ARM64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Release|x64.ActiveCfg = Release|x64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Release|x64.Build.0 = Release|x64
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Release|x86.ActiveCfg = Release|Win32
+		{75EC43C2-A753-443E-A2FC-C7D86392140C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
