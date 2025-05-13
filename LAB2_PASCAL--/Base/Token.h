@@ -4,43 +4,46 @@
 
 using namespace std;
 
+
+
 enum class TokenType {
-    IDENTIFIER,
-    INTEGER_LITERAL,
-    DOUBLE_LITERAL,
-    STRING_LITERAL,
-    PLUS,
-    MINUS,
-    MULTIPLY,
-    DIVIDE,
-    ASSIGN,
-    EQUAL,
-    NON_EQUAL,
-    LESS,//TODO
-    GREATER,// TODO
-    SEMICOLON, // ';'
-    COLON, // ':' 
-    COMMA, // ','
-    KEYWORD_PROGRAM,
-    KEYWORD_CONST,
-    KEYWORD_VAR,
-    KEYWORD_BEGIN,
-    KEYWORD_END,
-    KEYWORD_IF,
-    KEYWORD_THEN,
-    KEYWORD_ELSE,
-    KEYWORD_MOD,
-    KEYWORD_DIV,
-    KEYWORD_WRITE,
-    KEYWORD_READ,
-    LEFT_PAREN,
-    RIGHT_PAREN,
-    KEYWORD_INTEGER,
-    KEYWORD_DOUBLE,
-    KEYWORD_STRING,
-    END_OF_PROGRAM,
-    UNKNOWN,
-    END_OF_FILE
+    IDENTIFIER,       // имена переменных
+    INTEGER_LITERAL,  // переменная типа int
+    DOUBLE_LITERAL,   // переменная типа double
+    STRING_LITERAL,   // переменная типа string
+    PLUS,             // '+'
+    MINUS,            // '-'
+    MULTIPLY,         // '*'
+    DIVIDE,           // '/'
+    ASSIGN,           // ':='
+    EQUAL,            // '='
+    NON_EQUAL,        // '<>'
+    LESS,             // '<' <- TODO
+    GREATER,          // '>' <- TODO
+    LESS_OR_EQUAL,    // '<=' <- TODO
+    GREATER_OR_EQUAL, // '>=' <- TODO
+    SEMICOLON,        // ';'
+    COLON,            // ':' 
+    COMMA,            // ','
+    KEYWORD_PROGRAM,  // 'program'
+    KEYWORD_CONST,    // 'const'
+    KEYWORD_VAR,      // 'var'
+    KEYWORD_BEGIN,    // 'begin'
+    KEYWORD_END,      // 'end'
+    KEYWORD_IF,       // 'if'
+    KEYWORD_THEN,     // 'then'
+    KEYWORD_ELSE,     // 'else'
+    KEYWORD_MOD,      // 'mod'
+    KEYWORD_DIV,      // 'div'
+    KEYWORD_WRITE,    // 'Write'
+    KEYWORD_READ,     // 'Read'
+    LEFT_PAREN,       // '('
+    RIGHT_PAREN,      // ')'
+    KEYWORD_INTEGER,  // 'integer'
+    KEYWORD_DOUBLE,   // 'double'
+    KEYWORD_STRING,   // 'string'
+    END_OF_PROGRAM,   // 'end.'
+    UNKNOWN           // неизвестный тип
 };
 
 struct Token {

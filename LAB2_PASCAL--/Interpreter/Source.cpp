@@ -132,7 +132,7 @@ int main()
 						begin
 							num1 := 5;
 							num2 := 10;
-							if (num1 ! num2) then
+							if (num1 <> num2) then
 							begin
 								Write("then");
 							end
@@ -143,15 +143,18 @@ int main()
 						end.)";
 		string sample4 = R"( program Example;
 						begin
-							if (1 = 2) then
-								Write("YES");
-								Write("YES");
-								Write("YES");
-								Write("YES");
+							if (1 <> 2) then
+								if (1 < 2) then 
+									if (2 > 1) then
+										if (2 = 2) then
+											if (2 >= 2) then
+												if (2 <= 2) then
+													Write("YES");
 						end.
 						)";
-		Lexer lexer(sample4);
+		Lexer lexer(sample);
 		const vector<Token> tokens = lexer.tokenize();
+		for (auto& x : tokens) cout << x.value << '\n';
 		Parser parser(tokens);
 		list<list<Node*>>& ast = parser.parse();
 		Interpreter inter(ast);

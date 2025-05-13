@@ -12,26 +12,28 @@
 using namespace std;
 
 enum class LexerState {
-    START,
-    IDENTIFIER,
-    INTEGER,
-    DOUBLE,
-    STRING,
-    ASSIGN // cосто€ние после ':'
+    START,            // стартовое состо€ние
+    IDENTIFIER,       // обработка имЄн переменных
+    INTEGER,          // обработка целых чисел
+    DOUBLE,           // обработка чисел с плавающей точкой
+    STRING,           // обработка строк
+    ASSIGN,           // cосто€ние после ':'
+    GREATER_THAN,     // состо€ние после '>'
+    LESS_THAN         // состо€ние после '<'
 };
 
 class Lexer {
 private:
     string sourceCode;
-    int curPos = 0;
-    int curLine = 1;
-    int curColumn = 0;
+    int curPos;
+    int curLine;
+    int curColumn;
 
     string currentLexeme;
     LexerState state = LexerState::START;
     int tokenStartColumn;
 
-    vector<string> keywords = { "program", "const", "var", "begin", "end", "if", "then", "else", "mod", "div", "integer", "double", "Write", "Read" };
+    vector<string> keywords = { "program", "const", "var", "begin", "end", "if", "then", "else", "mod", "div", "integer", "double", "string", "Write", "Read" };
 
     TokenType getKeywordType(const string& lexeme) {
         if (lexeme == "program") return TokenType::KEYWORD_PROGRAM;
@@ -98,6 +100,18 @@ private:
                     curPos++;
                     curColumn++;
                 }
+                else if (currentChar == '>') {
+                    state = LexerState::GREATER_THAN;
+                    currentLexeme += currentChar;
+                    curPos++;
+                    curColumn++;
+                }
+                else if (currentChar == '<') {
+                    state = LexerState::LESS_THAN;
+                    currentLexeme += currentChar;
+                    curPos++;
+                    curColumn++;
+                }
                 else {
                     currentLexeme += currentChar;
                     curPos++;
@@ -108,9 +122,6 @@ private:
                     case '*': return createToken(TokenType::MULTIPLY, currentLexeme);
                     case '/': return createToken(TokenType::DIVIDE, currentLexeme);
                     case '=': return createToken(TokenType::EQUAL, currentLexeme);
-                    case '!': return createToken(TokenType::NON_EQUAL, currentLexeme);
-                    case '>': return createToken(TokenType::GREATER, currentLexeme);
-                    case '<': return createToken(TokenType::LESS, currentLexeme);
                     case ';': return createToken(TokenType::SEMICOLON, currentLexeme);
                     case ',': return createToken(TokenType::COMMA, currentLexeme);
                     case '(': return createToken(TokenType::LEFT_PAREN, currentLexeme);
@@ -200,17 +211,82 @@ private:
                 else {
                     return createToken(TokenType::COLON, currentLexeme.substr(0, 1)); // ¬ернуть только ':'
                 }
+
+            case LexerState::GREATER_THAN:
+                if (curPos < sourceCode.length() && sourceCode[curPos] == '=') {
+                    currentLexeme += sourceCode[curPos];
+                    curPos++;
+                    curColumn++;
+                    state = LexerState::START;
+                    return createToken(TokenType::GREATER_OR_EQUAL, currentLexeme);
+                }
+                else {
+                    state = LexerState::START;
+                    return createToken(TokenType::GREATER, currentLexeme);
+                }
+                break;
+
+            case LexerState::LESS_THAN:
+                if (curPos < sourceCode.length() && sourceCode[curPos] == '=') {
+                    currentLexeme += sourceCode[curPos];
+                    curPos++;
+                    curColumn++;
+                    state = LexerState::START;
+                    return createToken(TokenType::LESS_OR_EQUAL, currentLexeme);
+                }
+                else if (curPos < sourceCode.length() && sourceCode[curPos] == '>') {
+                    currentLexeme += sourceCode[curPos];
+                    curPos++;
+                    curColumn++;
+                    state = LexerState::START;
+                    return createToken(TokenType::NON_EQUAL, currentLexeme);
+                }
+                else {
+                    state = LexerState::START;
+                    return createToken(TokenType::LESS, currentLexeme);
+                }
+                break;
+            }
+        }
+
+        if (!currentLexeme.empty()) {
+            switch (state) {
+            case LexerState::IDENTIFIER: {
+                TokenType type = getKeywordType(currentLexeme);
+                if (type == TokenType::UNKNOWN) {
+                    type = TokenType::IDENTIFIER;
+                }
+                state = LexerState::START;
+                return createToken(type, currentLexeme);
+            }
+            case LexerState::INTEGER:
+                state = LexerState::START;
+                return createToken(TokenType::INTEGER_LITERAL, currentLexeme);
+            case LexerState::DOUBLE:
+                state = LexerState::START;
+                return createToken(TokenType::DOUBLE_LITERAL, currentLexeme);
+            case LexerState::STRING:
+                throw runtime_error("Error: Unterminated string literal at line " + to_string(curLine) + ", column " + to_string(tokenStartColumn));
+            case LexerState::ASSIGN:
+                state = LexerState::START;
+                return createToken(TokenType::COLON, currentLexeme.substr(0, 1)); // обработка ':' без '='
+            default:
+                // в состо€нии START ничего не должно оставатьс€
+                break;
             }
         }
         return nullopt; // ƒостигнут конец файла
     }
 
 public:
-    Lexer(const string& source) : sourceCode(source) {}
+    Lexer(const string& source) : sourceCode(source), curPos(0), curLine(1), curColumn(0) {}
 
     vector<Token> tokenize() {
         vector<Token> tokens;
         optional<Token> token;
+        curPos = 0;
+        curLine = 1;
+        curColumn = 0;
         while ((token = nextToken()).has_value()) {
             tokens.push_back(token.value());
         }
