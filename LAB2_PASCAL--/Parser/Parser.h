@@ -164,7 +164,7 @@ private:
             return stod(doubleToken->value);
         }
         else if (auto stringToken = match({ TokenType::STRING_LITERAL })) {
-            string value = stringToken->value.substr(1, stringToken->value.length() - 2);
+            string value = stringToken->value;
             return value;
         }
         else {
