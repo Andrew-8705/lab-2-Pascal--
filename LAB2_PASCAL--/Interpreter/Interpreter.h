@@ -241,7 +241,7 @@ private:
 				bool after_sign = false;
 				for (auto& token : ifNode->condition) // разбор
 				{
-					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER || token.type == TokenType::LESS)
+					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER || token.type == TokenType::LESS || token.type == TokenType::GREATER_OR_EQUAL || token.type == TokenType::LESS_OR_EQUAL)
 					{
 						if (after_sign) // два знака
 							throw runtime_error("Syntax Error in conditional expression: Multiple comparison operators ('=' or '!=') found");
@@ -283,8 +283,15 @@ private:
 							case TokenType::GREATER:
 							{
 								if constexpr (is_same_v<LeftType, string>)
-									throw runtime_error("Cannot compare strings using <");
+									throw runtime_error("Cannot compare strings using >");
 								return left > right;
+								break;
+							}
+							case TokenType::GREATER_OR_EQUAL:
+							{
+								if constexpr (is_same_v<LeftType, string>)
+									throw runtime_error("Cannot compare strings using >=");
+								return left >= right;
 								break;
 							}
 							case TokenType::LESS:
@@ -292,6 +299,13 @@ private:
 								if constexpr (is_same_v<LeftType, string>)
 									throw runtime_error("Cannot compare strings using <");
 								return left < right;
+								break;
+							}
+							case TokenType::LESS_OR_EQUAL:
+							{
+								if constexpr (is_same_v<LeftType, string>)
+									throw runtime_error("Cannot compare strings using <=");
+								return left <= right;
 								break;
 							}
 							case TokenType::EQUAL:
@@ -338,6 +352,8 @@ public:
 				executeBlock(*it);
 				it++;
 			}
+
+			cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' finished" << '\n';
 		}
 	}
 
