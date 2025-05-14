@@ -155,7 +155,6 @@ int main()
 		Lexer lexer(sample4);
 		const vector<Token> tokens = lexer.tokenize();
 		for (auto& x : tokens) cout << x.value << '\n';
-		for (auto& x : tokens) cout << x.value << '\n';
 		Parser parser(tokens);
 		list<list<Node*>>& ast = parser.parse();
 		Interpreter inter(ast);
