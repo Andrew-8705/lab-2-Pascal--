@@ -132,7 +132,9 @@ vector<Token> tokenize(const string& source) {
 }
 
 TEST(ParserTest, can_parse_empty_program) {
-    Parser parser(tokenize("program Empty; begin end."));
+    Parser parser(tokenize(R"(program Empty; 
+                              begin 
+                              end.)"));
     list<list<Node*>> ast = parser.parse();
     list<list<Node*>> expectedAst = {
         { new ProgramNode("Empty") },
@@ -180,9 +182,177 @@ TEST(ParserTest, can_parse_all_types_in_var_section) {
             new VariableDeclarationNode(idList3, "string") },
         { new BeginSectionNode() }
     };
-    ASSERT_TRUE(CompareAST(ast, expectedAst));
+    EXPECT_TRUE(CompareAST(ast, expectedAst));
     for (const auto& block : ast) for (Node* node : block) delete node;
     for (const auto& block : expectedAst) for (Node* node : block) delete node;
     delete idList1;
     delete idList2;
 }
+
+TEST(ParserTest, can_parse_assignment_statement) {
+    Parser parser(tokenize(R"(program AssignStmt; 
+                              begin 
+                                counter := 10; 
+                              end.)"));
+    list<list<Node*>> ast = parser.parse();
+    vector<Token> expression = { { TokenType::INTEGER_LITERAL, "10", 1, 18 } };
+    list<list<Node*>> expectedAst = {
+        { new ProgramNode("AssignStmt") },
+        { new BeginSectionNode(), new AssignmentStatementNode("counter", expression) }
+    };
+    EXPECT_TRUE(CompareAST(ast, expectedAst));
+    for (const auto& block : ast) for (Node* node : block) delete node;
+    for (const auto& block : expectedAst) for (Node* node : block) delete node;
+}
+
+TEST(ParserTest, can_parse_write_statement_single_literal) {
+    Parser parser(tokenize(R"(program WriteLit; 
+                             begin 
+                                Write("Hello"); 
+                             end.)"));
+    list<list<Node*>> ast = parser.parse();
+    vector<Token> expression = { { TokenType::STRING_LITERAL, "Hello", 1, 19 } };
+    list<list<Node*>> expectedAst = {
+        { new ProgramNode("WriteLit") },
+        { new BeginSectionNode(), new WriteStatementNode(expression) }
+    };
+    EXPECT_TRUE(CompareAST(ast, expectedAst));
+    for (const auto& block : ast) for (Node* node : block) delete node;
+    for (const auto& block : expectedAst) for (Node* node : block) delete node;
+}
+
+TEST(ParserTest, can_parse_read_statement_single_identifier) {
+    Parser parser(tokenize(R"(program ReadId; 
+                              var 
+                                input: string; 
+                              begin 
+                                Read(input); 
+                              end.)"));
+    list<list<Node*>> ast = parser.parse();
+    IdentifierListNode* idList = new IdentifierListNode({ "input" });
+    list<list<Node*>> expectedAst = {
+        { new ProgramNode("ReadId") },
+        { new VarSectionNode(), new VariableDeclarationNode(idList, "string") },
+        { new BeginSectionNode(), new ReadStatementNode(idList) }
+    };
+    EXPECT_TRUE(CompareAST(ast, expectedAst));
+    for (const auto& block : ast) for (Node* node : block) delete node;
+    for (const auto& block : expectedAst) for (Node* node : block) delete node;
+    delete idList;
+}
+
+TEST(ParserTest, can_parse_if_statement_without_else) {
+    Parser parser(tokenize(R"(program IfNoElse; 
+                              begin 
+                                if (flag) then 
+                                    result := 1; 
+                              end.)"));
+    list<list<Node*>> ast = parser.parse();
+    vector<Token> condition = { { TokenType::IDENTIFIER, "flag", 1, 15 } };
+    list<Node*> thenBlock = { new AssignmentStatementNode("result", { { TokenType::INTEGER_LITERAL, "1", 1, 28 } }) };
+    list<list<Node*>> expectedAst = {
+        { new ProgramNode("IfNoElse") },
+        { new BeginSectionNode(), new IfStatementNode(condition, thenBlock, nullopt) }
+    };
+    EXPECT_TRUE(CompareAST(ast, expectedAst));
+    for (const auto& block : ast) for (Node* node : block) delete node;
+    for (const auto& block : expectedAst) for (Node* node : block) delete node;
+    for (Node* node : thenBlock) delete node;
+}
+
+TEST(ParserTest, can_parse_if_statement_with_else) {
+    Parser parser(tokenize(R"(program IfElse; 
+                              begin 
+                                if (count > 0) then 
+                                    value := 1;
+                                else
+                                    value := -1; 
+                             end.)"));
+    list<list<Node*>> ast = parser.parse();
+    vector<Token> condition = { { TokenType::IDENTIFIER, "count", 1, 15 }, { TokenType::GREATER, ">", 1, 21 }, { TokenType::INTEGER_LITERAL, "0", 1, 23 } };
+    list<Node*> thenBlock = { new AssignmentStatementNode("value", { { TokenType::INTEGER_LITERAL, "1", 1, 33 } }) };
+    list<Node*> elseBlock = { new AssignmentStatementNode("value", { { TokenType::MINUS, "-", 1, 45 }, { TokenType::INTEGER_LITERAL, "1", 1, 46 } }) };
+    list<list<Node*>> expectedAst = {
+        { new ProgramNode("IfElse") },
+        { new BeginSectionNode(), new IfStatementNode(condition, thenBlock, elseBlock) }
+    };
+    EXPECT_TRUE(CompareAST(ast, expectedAst));
+    for (const auto& block : ast) for (Node* node : block) delete node;
+    for (const auto& block : expectedAst) for (Node* node : block) delete node;
+    for (Node* node : thenBlock) delete node;
+    for (Node* node : elseBlock) delete node;
+}
+
+TEST(ParserTest, handles_syntax_error_missing_semicolon_program_header) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorNoSemicolon 
+                                  begin 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_missing_semicolon_const_declaration) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorConstNoSemicolon; 
+                                  const 
+                                    PI : double = 3.14 
+                                  begin 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_missing_colon_const_declaration) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorConstNoColon; 
+                                  const 
+                                    PI double = 3.14; 
+                                  begin 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_missing_equal_const_declaration) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorConstNoEqual;
+                                  const 
+                                    PI : double 3.14; 
+                                  begin 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_missing_semicolon_var_declaration) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorVarNoSemicolon; 
+                                  var 
+                                    value : integer 
+                                  begin 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_missing_colon_var_declaration) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorVarNoColon; 
+                                  var 
+                                    value integer; 
+                                  begin 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+//TEST(ParserTest, handles_syntax_error_missing_semicolon_assignment) {
+//    EXPECT_THROW({
+//        Parser parser(tokenize(R"(program ErrorAss; 
+//                                  begin 
+//                                    counter := 5
+//                                  end.)"));
+//        parser.parse();
+//        }, runtime_error);
+//}

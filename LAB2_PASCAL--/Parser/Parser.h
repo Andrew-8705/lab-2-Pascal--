@@ -50,7 +50,6 @@ private:
         optional<Token> tk = match(tts);
         if (tk.has_value())
             return tk.value();
-        cout << "UUUPPPSPS" << '\n';
         throw runtime_error("Expected: " + errorMessage);
     }
 
@@ -271,7 +270,7 @@ private:
             require({ TokenType::KEYWORD_END }, "'end'");
         }
         else {
-            parseStatement();
+            parseStatement(); // <- пропускает отсутствие ';' в конце строки, надо как-то пофиксить
         }
         currentBlock = previousBlock;
         return block;
