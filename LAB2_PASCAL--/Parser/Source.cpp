@@ -93,10 +93,13 @@ int main()
 						a := res;
 						Read(num2);
 					end.)";
-		// проблема с ; решится после добавления нормального парсера
-		// Message: string = 'Hello, World!'
+		string problem = R"(program MissingSemicolon; 
+                                  begin 
+                                    a := 1 
+                                    b := 2; 
+                                  end.)";
 		auto start_tokenize = std::chrono::high_resolution_clock::now();
-		Lexer lexer(code2);
+		Lexer lexer(problem);
 		std::vector<Token> tokens = lexer.tokenize();
 		auto end_tokenize = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> tokenize_time = end_tokenize - start_tokenize;
@@ -108,7 +111,6 @@ int main()
 		auto end_parse = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> parse_time = end_parse - start_parse;
 		cout << "Time of parsing: " << parse_time.count() << '\n';
-		//Print(root);
 	}
 	catch (const std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;

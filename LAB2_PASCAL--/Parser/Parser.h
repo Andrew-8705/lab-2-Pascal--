@@ -8,6 +8,7 @@
 #include "../Base/Token.h"
 #include "../Base/Node.h"
 #include <list>
+#include <set>
 
 using namespace std;
 
@@ -23,6 +24,13 @@ private:
             return tokens[curTokenPos];
         }
         return Token(TokenType::UNKNOWN, "", -1, -1);
+    }
+
+    TokenType getNextTokenType() const {
+        if (curTokenPos + 1 < tokens.size()) {
+            return tokens[curTokenPos + 1].type;
+        }
+        return TokenType::UNKNOWN;
     }
 
     Token pass() {
@@ -200,11 +208,27 @@ private:
     }
 
     void parseAssignmentStatement() {
+        static const set<TokenType> unexpectedTokens = {
+            TokenType::KEYWORD_BEGIN,
+            TokenType::KEYWORD_WRITE,
+            TokenType::KEYWORD_READ,
+            TokenType::KEYWORD_IF,
+            TokenType::KEYWORD_END,
+            TokenType::END_OF_PROGRAM
+        };
+
         Token identifier = require({ TokenType::IDENTIFIER }, "variable identifier");
         AssignmentStatementNode* assignNode = new AssignmentStatementNode(identifier.value);
         require({ TokenType::ASSIGN }, "':='");
-        while (peek().type != TokenType::SEMICOLON)
+        while (peek().type != TokenType::SEMICOLON) {
+            if (unexpectedTokens.count(peek().type)) {
+                throw runtime_error("Syntax Error: Expected ';' after assignment for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
+            }
+            if (peek().type == TokenType::IDENTIFIER && getNextTokenType() == TokenType::ASSIGN) {
+                throw runtime_error("Syntax Error: Expected ';' after assignment for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
+            }
             assignNode->expression.push_back(pass());
+        }
         if (assignNode->expression.empty()) {
             throw runtime_error("Syntax Error: Expected an expression after ':=' for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
         }
@@ -241,8 +265,27 @@ private:
         require({ TokenType::KEYWORD_IF }, "'if'");
         IfStatementNode* ifNode = new IfStatementNode();
         require({ TokenType::LEFT_PAREN }, "'('");
+
+        static const std::set<TokenType> unexpectedTokensCondition = {
+            TokenType::KEYWORD_THEN,
+            TokenType::KEYWORD_ELSE,
+            TokenType::KEYWORD_BEGIN,
+            TokenType::KEYWORD_WRITE,
+            TokenType::KEYWORD_READ,
+            TokenType::KEYWORD_IF,
+            TokenType::KEYWORD_END,
+            TokenType::END_OF_PROGRAM,
+            TokenType::SEMICOLON // преждевременная точка с запятой
+        };
+
         while (peek().type != TokenType::RIGHT_PAREN) {
+            if (unexpectedTokensCondition.count(peek().type)) {
+                throw runtime_error("Syntax Error: Expected ')' after 'if' condition at line " + to_string(peek().line) + ", column " + to_string(peek().column));
+            }
             ifNode->condition.push_back(pass());
+            if (curTokenPos >= tokens.size()) {
+                throw runtime_error("Syntax Error: Unexpected end of input while parsing 'if' condition.");
+            }
         }
         require({ TokenType::RIGHT_PAREN }, "')'");
         require({ TokenType::KEYWORD_THEN }, "'then'");
