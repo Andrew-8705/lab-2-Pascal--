@@ -39,7 +39,7 @@ class ExpressionValidator {
 
 public:
     static bool IsOperator(std::string op) {
-        return op == "+" || op == "-" || op == "*" || op == "/" || op == "mod" || op == "div";
+        return op == "+" || op == "-" || op == "*" || op == "/" || op == "mod" || op == "div" || op == "_";
     }
 
     static void Validate(vector<Token>& expr) {

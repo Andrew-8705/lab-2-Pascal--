@@ -16,37 +16,46 @@ public:
     static double Calculate(const vector<Token>& expr, const map<string, double>& operands) {
         stack<double> st;
         double leftOp, rightOp;
-
+        double operand;
         for (const Token& tk : expr) {
             string lexem = tk.value;
             if (ExpressionValidator::IsOperator(lexem)) {
-                if (st.size() < 2)
-                    throw runtime_error("Invalid postfix expression: insufficient operands for operator " + lexem);
-
-                rightOp = st.top(); st.pop();
-                leftOp = st.top(); st.pop();
-
-                if (lexem == "+")
-                    st.push(leftOp + rightOp);
-                else if (lexem == "-")
-                    st.push(leftOp - rightOp);
-                else if (lexem == "*")
-                    st.push(leftOp * rightOp);
-                else if (lexem == "/") {
-                    if (rightOp == 0.0) throw runtime_error("Division by zero");
-                    st.push(leftOp / rightOp);
-                }
-                else if (lexem == "mod") {
-                    if (rightOp == 0.0) {
-                        throw runtime_error("Modulo by zero");
+                if (lexem == "_") {
+                    if (st.empty()) {
+                        throw runtime_error("Invalid postfix expression: insufficient operands for unary minus");
                     }
-                    st.push(fmod(leftOp, rightOp));
+                    operand = st.top(); st.pop();
+                    st.push(-operand);
                 }
-                else if (lexem == "div") {
-                    if (rightOp == 0.0) {
-                        throw runtime_error("Integer division by zero");
+                else {
+                    if (st.size() < 2)
+                        throw runtime_error("Invalid postfix expression: insufficient operands for operator " + lexem);
+
+                    rightOp = st.top(); st.pop();
+                    leftOp = st.top(); st.pop();
+
+                    if (lexem == "+")
+                        st.push(leftOp + rightOp);
+                    else if (lexem == "-")
+                        st.push(leftOp - rightOp);
+                    else if (lexem == "*")
+                        st.push(leftOp * rightOp);
+                    else if (lexem == "/") {
+                        if (rightOp == 0.0) throw runtime_error("Division by zero");
+                        st.push(leftOp / rightOp);
                     }
-                    st.push(floor(leftOp / rightOp));
+                    else if (lexem == "mod") {
+                        if (rightOp == 0.0) {
+                            throw runtime_error("Modulo by zero");
+                        }
+                        st.push(fmod(leftOp, rightOp));
+                    }
+                    else if (lexem == "div") {
+                        if (rightOp == 0.0) {
+                            throw runtime_error("Integer division by zero");
+                        }
+                        st.push(floor(leftOp / rightOp));
+                    }
                 }
             }
             else if (tk.type == TokenType::IDENTIFIER) {
@@ -72,5 +81,3 @@ public:
         return st.top();
     }
 };
-
-// TODO: добавить поддержку унарного минуса
