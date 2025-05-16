@@ -263,3 +263,140 @@ TEST(InterpreterTest, read_multiple_variables) {
 }                                                                        // далее пытаемся сделать evaluate_string, но не сработает, так как переменная 'a' является числом
                                                                          // по итогу выбрасывается исключение
 
+TEST(InterpreterTest, read_to_constant_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program TestReadConstError;
+                                        const
+                                            VALUE : integer = 5;
+                                        begin
+                                            Read(VALUE);
+                                        end.)");
+    Interpreter interpreter(ast);
+    simulateCin("10\n", [&]() {
+        EXPECT_THROW(interpreter.run(), runtime_error);
+        });
+}
+
+TEST(InterpreterTest, read_undeclared_variable_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program TestReadUndeclaredError;
+                                        begin
+                                            Read(unknown);
+                                        end.)");
+    Interpreter interpreter(ast);
+    simulateCin("test\n", [&]() {
+        EXPECT_THROW(interpreter.run(), runtime_error);
+        });
+}
+
+TEST(InterpreterTest, read_invalid_integer_input_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program TestReadInvalidIntError;
+                                        var
+                                            num : integer;
+                                        begin
+                                            Read(num);
+                                        end.)");
+    Interpreter interpreter(ast);
+    simulateCin("abc\n", [&]() {
+        EXPECT_THROW(interpreter.run(), runtime_error); // этот тест не проходится, хотя он и реально выбрасывает исключение
+        });                                             // мб исключение не того типа 
+}
+
+TEST(InterpreterTest, if_statement_numeric_true) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfTrue;
+                                        var
+                                            x : integer;
+                                        begin
+                                            x := 5;
+                                            if (x > 0) then
+                                                Write("Positive");
+                                        end.)");
+    Interpreter interpreter(ast);
+    stringstream ss = captureCout([&]() { interpreter.run(); });
+    EXPECT_EQ(ss.str(), "Positive\n");
+}
+
+TEST(InterpreterTest, if_statement_numeric_false_no_else) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfFalseNoElse;
+                                        var
+                                            x : integer;
+                                        begin
+                                            x := -1;
+                                            if (x > 0) then
+                                                Write("Positive");
+                                        end.)");
+    Interpreter interpreter(ast);
+    stringstream ss = captureCout([&]() { interpreter.run(); });
+    EXPECT_EQ(ss.str().find("Positive"), string::npos);
+}
+
+TEST(InterpreterTest, if_statement_numeric_false_with_else) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfFalseElse;
+                                        var
+                                            x : integer;
+                                        begin
+                                            x := -1;
+                                            if (x > 0) then
+                                                Write("Positive");
+                                            else
+                                                Write("Not positive");
+                                        end.)");
+    Interpreter interpreter(ast);
+    stringstream ss = captureCout([&]() { interpreter.run(); });
+    EXPECT_EQ(ss.str(), "Not positive\n");
+}
+
+TEST(InterpreterTest, if_statement_string_equal_true) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfStrTrue;
+                                        var
+                                            msg : string;
+                                        begin
+                                            msg := "yes";
+                                            if (msg = "yes") then
+                                                Write("Affirmative");
+                                        end.)");
+    Interpreter interpreter(ast);
+    stringstream ss = captureCout([&]() { interpreter.run(); });
+    EXPECT_EQ(ss.str(), "Affirmative\n");
+}
+
+TEST(InterpreterTest, if_statement_string_equal_false_with_else) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfStrFalseElse;
+                                        var
+                                            msg : string;
+                                        begin
+                                            msg := "no";
+                                            if (msg = "yes") then
+                                                Write("Affirmative");
+                                            else
+                                                Write("Negative");
+                                        end.)");
+    Interpreter interpreter(ast);
+    stringstream ss = captureCout([&]() { interpreter.run(); });
+    EXPECT_EQ(ss.str(), "Negative\n");
+}
+
+TEST(InterpreterTest, if_statement_missing_comparison_operator_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfNoOpError;
+                                        var
+                                            x : integer;
+                                        begin
+                                            x := 5;
+                                            if (x 0) then
+                                                Write("Error");
+                                        end.)");
+    Interpreter interpreter(ast);
+    EXPECT_THROW(interpreter.run(), runtime_error); // программа конечно выбрасывает исключение, но не из Interpreter
+}                                                   // в Interpreter есть исключение только на 2 знака сравнения, но не на отсутствие знака
+
+TEST(InterpreterTest, if_statement_type_mismatch_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program TestIfTypeError; 
+                                        var 
+                                            num : integer; 
+                                            msg : string; 
+                                        begin 
+                                            num := 5; 
+                                            if (num = msg) then 
+                                                Write("Error"); 
+                                        end.)");
+    Interpreter interpreter(ast);
+    EXPECT_THROW(interpreter.run(), runtime_error);
+}

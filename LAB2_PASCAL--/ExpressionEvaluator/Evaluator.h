@@ -88,7 +88,7 @@ public:
 					}
 				}
 				catch (const bad_variant_access& e) {
-					throw runtime_error("Type error: Identifier '" + token.value);
+					throw runtime_error("Type error: Identifier '" + token.value + "' has unsuitable type");
 				}
 				catch (const exception& e) {
 					throw runtime_error("Error: " + string(e.what()));

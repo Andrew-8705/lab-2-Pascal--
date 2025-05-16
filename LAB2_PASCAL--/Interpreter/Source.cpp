@@ -152,14 +152,13 @@ int main()
 													Write("YES");
 						end.
 						)";
-		string problem = R"(program TestReadMulti;
+		string problem = R"(program TestIfNoOpError;
                                         var
-                                            a : integer;
-                                            b : double;
-                                            c : string;
+                                            x : integer;
                                         begin
-                                            Read(a, b, c);
-                                            Write("Entered: ", a, b, c);
+                                            x := 5;
+                                            if (x 0) then
+                                                Write("Error");
                                         end.)";
 		Lexer lexer(problem);
 		const vector<Token> tokens = lexer.tokenize();
