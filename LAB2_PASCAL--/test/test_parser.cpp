@@ -377,6 +377,36 @@ TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
         }, runtime_error);
 }
 
+TEST(ParserTest, handles_syntax_error_write_starts_with_comma) {
+    EXPECT_THROW({
+        Parser  parser(tokenize(R"(program ErrorWriteCommaStartError;
+                                   begin
+                                     Write(, "Error");
+                                   end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_write_consecutive_commas) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorWriteConsecutiveCommasError;
+                                  begin
+                                    Write("A", , "B");
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
+TEST(ParserTest, handles_syntax_error_write_ends_with_comma) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program ErrorWriteCommaEndError;
+                                  begin
+                                    Write("End", );
+                                end.)"));
+        parser.parse();
+        }, runtime_error);
+}
+
 TEST(ParserTest, handles_syntax_error_missing_left_paren_read) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorReadNoLParen; 

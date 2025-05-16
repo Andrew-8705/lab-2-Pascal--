@@ -93,11 +93,10 @@ int main()
 						a := res;
 						Read(num2);
 					end.)";
-		string problem = R"(program MissingSemicolon; 
-                                  begin 
-                                    a := 1 
-                                    b := 2; 
-                                  end.)";
+		string problem = R"(program TestWriteCommaEndError;
+                                        begin
+                                            Write("End", );
+                                        end.)";
 		auto start_tokenize = std::chrono::high_resolution_clock::now();
 		Lexer lexer(problem);
 		std::vector<Token> tokens = lexer.tokenize();
