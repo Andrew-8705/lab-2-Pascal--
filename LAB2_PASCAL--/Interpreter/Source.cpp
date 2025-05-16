@@ -144,15 +144,24 @@ int main()
 		string sample4 = R"( program Example;
 						begin
 							if (1 <> 2) then
-								if (2 < 3) then 
+								if (2 <= 3) then 
 									if (5 > 4) then
 										if (10 = 10) then
 											if (15 >= 14) then
-												if (16 >= 17) then
+												if (16 >= 16) then
 													Write("YES");
 						end.
 						)";
-		Lexer lexer(sample4);
+		string problem = R"(program TestReadMulti;
+                                        var
+                                            a : integer;
+                                            b : double;
+                                            c : string;
+                                        begin
+                                            Read(a, b, c);
+                                            Write("Entered: ", a, b, c);
+                                        end.)";
+		Lexer lexer(problem);
 		const vector<Token> tokens = lexer.tokenize();
 		for (auto& x : tokens) cout << x.value << '\n';
 		Parser parser(tokens);

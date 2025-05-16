@@ -6,7 +6,6 @@
 #include <variant>
 #include <string>
 #include <unordered_map>
-//#include "../expression_evaluator/evaluator.h"
 #include "../ExpressionEvaluator/Evaluator.h"
 
 using namespace std;
@@ -201,7 +200,7 @@ private:
 					if (variables.find(listItem) == variables.end())
 						throw runtime_error("Undeclared variable: " + listItem);
 					string input;
-					cin >> input;
+					getline(cin, input);
 					try 
 					{
 						visit([&](auto&& arg) 
@@ -345,7 +344,7 @@ public:
 
 	void run() {
 		if (!ast.empty()) {
-			cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' started" << '\n';
+			//cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' started" << '\n';
 			auto it = next(ast.begin());
 
 			while (it != ast.end()) {
@@ -353,7 +352,7 @@ public:
 				it++;
 			}
 
-			cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' finished" << '\n';
+			//cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' finished" << '\n';
 		}
 	}
 
