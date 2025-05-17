@@ -33,6 +33,9 @@
     <ClInclude Include="PostfixCalculator.h" />
     <ClInclude Include="PostfixConverter.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PostfixConverter.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
