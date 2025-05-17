@@ -18,10 +18,10 @@ enum class TokenType {
     ASSIGN,           // ':='
     EQUAL,            // '='
     NON_EQUAL,        // '<>'
-    LESS,             // '<' <- TODO
-    GREATER,          // '>' <- TODO
-    LESS_OR_EQUAL,    // '<=' <- TODO
-    GREATER_OR_EQUAL, // '>=' <- TODO
+    LESS,             // '<'
+    GREATER,          // '>'
+    LESS_OR_EQUAL,    // '<='
+    GREATER_OR_EQUAL, // '>='
     SEMICOLON,        // ';'
     COLON,            // ':' 
     COMMA,            // ','

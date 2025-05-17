@@ -14,24 +14,17 @@ using namespace std;
 class Node {
 public:
     enum class NodeType {
-        PROGRAM_STATEMENT,
-        CONST_DECLARATION,
-        VARIABLE_DECLARATION,
-        ASSIGNMENT_STATEMENT,
-        IF_STATEMENT,
-        IDENTIFIER,
-        INTEGER_LITERAL,
-        DOUBLE_LITERAL,
-        STRING_LITERAL,
-        BINARY_OPERATION,
-        UNARY_OPERATION,
-        WRITE_STATEMENT,
-        READ_STATEMENT,
-        BEGIN_STATEMENT,
-        IDENTIFIER_LIST,
-        CONST_SECTION,
-        VAR_SECTION,
-        BEGIN_SECTION
+        PROGRAM_STATEMENT,      // заголовок программы
+        CONST_SECTION,          // блок объ€влени€ констант
+        VAR_SECTION,            // блок объ€влени€ переменных
+        BEGIN_SECTION,          // блок исполн€емой части программы
+        CONST_DECLARATION,      // объ€вление одной константы
+        VARIABLE_DECLARATION,   // объ€вление одной или нескольких переменных одного типа
+        ASSIGNMENT_STATEMENT,   // оператор присваивани€
+        IF_STATEMENT,           // условный оператор
+        WRITE_STATEMENT,        // оператор вывода 
+        READ_STATEMENT,         // оператор ввода
+        IDENTIFIER_LIST         // список идентификаторов
     };
 
     NodeType type;
