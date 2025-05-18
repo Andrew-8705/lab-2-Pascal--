@@ -1,6 +1,7 @@
 #include "../Interpreter/Interpreter.h"
 #include "../Lexer/Lexer.h"
 #include "../Parser/Parser.h"
+#include "../ExpressionEvaluator/PostfixConverter.cpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -120,10 +121,10 @@ int main()
 						end.)";
 		string sample2 = R"(program Example;
 						var
-							str: string;
+							num: integer;
 						begin
-							str := "borow";
-							Write("Here is: ", str);
+							num := 3;
+							Write(num+num);
 						end.)";
 		string sample3 = R"(program Example;
 						var
@@ -160,7 +161,7 @@ int main()
                                             if (x 0) then
                                                 Write("Error");
                                         end.)";
-		Lexer lexer(problem);
+		Lexer lexer(sample2);
 		const vector<Token> tokens = lexer.tokenize();
 		for (auto& x : tokens) cout << x.value << '\n';
 		Parser parser(tokens);

@@ -240,12 +240,10 @@ private:
         require({ TokenType::KEYWORD_WRITE }, "'Write'");
         WriteStatementNode* writeNode = new WriteStatementNode();
         require({ TokenType::LEFT_PAREN }, "'('");
-        if (peek().type != TokenType::RIGHT_PAREN) {
+        while (getNextTokenType() != TokenType::RIGHT_PAREN) {
             writeNode->expression.push_back(pass());
-            while (match({ TokenType::COMMA })) {
-                writeNode->expression.push_back(pass());
-            }
         }
+        writeNode->expression.push_back(pass());
         require({ TokenType::RIGHT_PAREN }, "')'");
         require({ TokenType::SEMICOLON }, "';'");
         currentBlock->push_back(writeNode);
