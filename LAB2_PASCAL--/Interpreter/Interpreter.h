@@ -7,8 +7,27 @@
 #include <string>
 #include <unordered_map>
 #include "../ExpressionEvaluator/Evaluator.h"
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
+
+const int pascal_precision = 14;
+
+const string num_to_str(const double num)
+{
+	stringstream ss;
+	ss << fixed << setprecision(pascal_precision) << num;
+	string str = ss.str();
+	size_t dot_pos = str.find('.');
+	for (size_t i = str.size() - 1; i > dot_pos - 1; i--)
+	{
+		if (str[i] != '0' && i != dot_pos)
+			break;
+		str.erase(i);
+	}
+	return str;
+}
 
 class Interpreter {
 private:
@@ -107,9 +126,9 @@ private:
 					{
 						case TokenType::STRING_LITERAL:
 						{
-							if (!expression.empty())
+							if(!expression.empty() && last_comma)
 								throw runtime_error("Syntax Error in Write statement: String literal cannot follow an expression without a comma separator");
-							record += token.value;
+							expression.push_back(token);
 							last_comma = false;
 							is_first_token = false;
 							break;
@@ -122,7 +141,7 @@ private:
 							{
 								try
 								{
-									record += to_string(Evaluator::evaluate_numeric(expression, variables, constants));
+									record += num_to_str(Evaluator::evaluate_numeric(expression, variables, constants));
 								}
 								catch (exception& exc)
 								{
@@ -171,7 +190,7 @@ private:
 				{
 					try
 					{
-						record += to_string(Evaluator::evaluate_numeric(expression, variables, constants));
+						record += num_to_str(Evaluator::evaluate_numeric(expression, variables, constants));
 					}
 					catch (exception& exc)
 					{
@@ -250,7 +269,8 @@ private:
 					}
 					after_sign ? right_expression.push_back(token) : left_expression.push_back(token);
 				}
-
+				if(!after_sign)
+					throw runtime_error("Syntax Error in conditional expression: Must be comparision operator!");
 				variant<double, string> leftExRes;
 				variant<double, string> rightExRes;
 				try

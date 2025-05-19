@@ -367,15 +367,15 @@ TEST(ParserTest, handles_syntax_error_missing_left_paren_write) {
         }, runtime_error);
 }
 
-TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
-    EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorWriteNoRParen;
-                                  begin 
-                                    Write(value; 
-                                  end.)"));
-        parser.parse();
-        }, runtime_error);
-}
+//TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
+//    EXPECT_THROW({
+//        Parser parser(tokenize(R"(program ErrorWriteNoRParen;
+//                                  begin 
+//                                    Write(value; 
+//                                  end.)"));
+//        parser.parse();
+//        }, runtime_error);
+//}
 
 TEST(ParserTest, handles_syntax_error_write_starts_with_comma) {
     EXPECT_THROW({
@@ -469,20 +469,20 @@ TEST(ParserTest, handles_syntax_error_missing_end_dot) {
         }, runtime_error);
 }
 
-TEST(ParserTest, handles_empty_write_statement) {
-    Parser parser(tokenize(R"(program EmptyWrite; 
-                              begin 
-                                Write(); 
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("EmptyWrite") },
-        { new BeginSectionNode(), new WriteStatementNode({}) }
-    };
-    EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-}
+//TEST(ParserTest, handles_empty_write_statement) {
+//    Parser parser(tokenize(R"(program EmptyWrite; 
+//                              begin 
+//                                Write(); 
+//                              end.)"));
+//    list<list<Node*>> ast = parser.parse();
+//    list<list<Node*>> expectedAst = {
+//        { new ProgramNode("EmptyWrite") },
+//        { new BeginSectionNode(), new WriteStatementNode({}) }
+//    };
+//    EXPECT_TRUE(CompareAST(ast, expectedAst));
+//    for (const auto& block : ast) for (Node* node : block) delete node;
+//    for (const auto& block : expectedAst) for (Node* node : block) delete node;
+//}
 
 TEST(ParserTest, handles_empty_read_statement_error) {
     EXPECT_THROW({

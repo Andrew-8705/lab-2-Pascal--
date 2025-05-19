@@ -40,7 +40,8 @@ public:
 			}, var);
 		};
 
-		for (string var : vars) {
+		for (const auto& var : vars) 
+		{
 			if (variables.find(var) != variables.end())
 				values[var] = get_double_value(var, variables[var]);
 			else if (constants.find(var) != constants.end())

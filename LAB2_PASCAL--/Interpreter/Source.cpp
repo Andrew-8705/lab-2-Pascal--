@@ -121,10 +121,10 @@ int main()
 						end.)";
 		string sample2 = R"(program Example;
 						var
-							num: integer;
+							str: string;
 						begin
-							num := 3;
-							Write(num+num);
+							Read(str);
+							Write("Hello " + str, " Goodbye " + "BOROW",str + str);
 						end.)";
 		string sample3 = R"(program Example;
 						var
@@ -169,7 +169,7 @@ int main()
 		Interpreter inter(ast);
 		inter.run();
 	}
-	catch (const std::exception& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+	catch (const exception& e) {
+		cerr << "Error: " << e.what() << endl;
 	}
 }

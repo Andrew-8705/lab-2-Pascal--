@@ -264,7 +264,7 @@ private:
         IfStatementNode* ifNode = new IfStatementNode();
         require({ TokenType::LEFT_PAREN }, "'('");
 
-        static const std::set<TokenType> unexpectedTokensCondition = {
+        static const set<TokenType> unexpectedTokensCondition = {
             TokenType::KEYWORD_THEN,
             TokenType::KEYWORD_ELSE,
             TokenType::KEYWORD_BEGIN,
