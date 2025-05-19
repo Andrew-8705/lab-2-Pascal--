@@ -124,15 +124,6 @@ private:
 				{
 					switch (token.type)
 					{
-						case TokenType::STRING_LITERAL:
-						{
-							if(!expression.empty() && last_comma)
-								throw runtime_error("Syntax Error in Write statement: String literal cannot follow an expression without a comma separator");
-							expression.push_back(token);
-							last_comma = false;
-							is_first_token = false;
-							break;
-						}
 						case TokenType::COMMA:
 						{
 							if (is_first_token)
@@ -171,6 +162,7 @@ private:
 						case TokenType::DIVIDE:
 						case TokenType::KEYWORD_DIV:
 						case TokenType::KEYWORD_MOD:
+						case TokenType::STRING_LITERAL:
 						{
 							expression.push_back(token);
 							last_comma = false;

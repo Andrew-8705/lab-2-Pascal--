@@ -124,7 +124,7 @@ int main()
 							str: string;
 						begin
 							Read(str);
-							Write("Hello " + str, " Goodbye " + "BOROW",str + str);
+							Write("Hello " + str, " Goodbye " + "BOROW",str + 2);
 						end.)";
 		string sample3 = R"(program Example;
 						var
@@ -161,7 +161,7 @@ int main()
                                             if (x 0) then
                                                 Write("Error");
                                         end.)";
-		Lexer lexer(sample2);
+		Lexer lexer(sample);
 		const vector<Token> tokens = lexer.tokenize();
 		for (auto& x : tokens) cout << x.value << '\n';
 		Parser parser(tokens);
