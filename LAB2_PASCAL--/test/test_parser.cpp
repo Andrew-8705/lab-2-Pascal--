@@ -367,42 +367,12 @@ TEST(ParserTest, handles_syntax_error_missing_left_paren_write) {
         }, runtime_error);
 }
 
-//TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
-//    EXPECT_THROW({
-//        Parser parser(tokenize(R"(program ErrorWriteNoRParen;
-//                                  begin 
-//                                    Write(value; 
-//                                  end.)"));
-//        parser.parse();
-//        }, runtime_error);
-//}
-
-TEST(ParserTest, handles_syntax_error_write_starts_with_comma) {
+TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
     EXPECT_THROW({
-        Parser  parser(tokenize(R"(program ErrorWriteCommaStartError;
-                                   begin
-                                     Write(, "Error");
-                                   end.)"));
-        parser.parse();
-        }, runtime_error);
-}
-
-TEST(ParserTest, handles_syntax_error_write_consecutive_commas) {
-    EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorWriteConsecutiveCommasError;
-                                  begin
-                                    Write("A", , "B");
+        Parser parser(tokenize(R"(program ErrorWriteNoRParen;
+                                  begin 
+                                    Write(value; 
                                   end.)"));
-        parser.parse();
-        }, runtime_error);
-}
-
-TEST(ParserTest, handles_syntax_error_write_ends_with_comma) {
-    EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorWriteCommaEndError;
-                                  begin
-                                    Write("End", );
-                                end.)"));
         parser.parse();
         }, runtime_error);
 }
@@ -469,20 +439,15 @@ TEST(ParserTest, handles_syntax_error_missing_end_dot) {
         }, runtime_error);
 }
 
-//TEST(ParserTest, handles_empty_write_statement) {
-//    Parser parser(tokenize(R"(program EmptyWrite; 
-//                              begin 
-//                                Write(); 
-//                              end.)"));
-//    list<list<Node*>> ast = parser.parse();
-//    list<list<Node*>> expectedAst = {
-//        { new ProgramNode("EmptyWrite") },
-//        { new BeginSectionNode(), new WriteStatementNode({}) }
-//    };
-//    EXPECT_TRUE(CompareAST(ast, expectedAst));
-//    for (const auto& block : ast) for (Node* node : block) delete node;
-//    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-//}
+TEST(ParserTest, handles_syntax_error_empty_write_statement) {
+    EXPECT_THROW({
+        Parser parser(tokenize(R"(program EmptyWrite; 
+                                  begin 
+                                    Write(); 
+                                  end.)"));
+        parser.parse();
+        }, runtime_error);
+}
 
 TEST(ParserTest, handles_empty_read_statement_error) {
     EXPECT_THROW({
@@ -509,18 +474,22 @@ TEST(ParserTest, can_parse_assignment_with_identifier) {
     for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
-TEST(ParserTest, can_parse_write_statement_multiple_args) {
+TEST(ParserTest, can_parse_write_statement_multiple_args_with_commas) {
     Parser parser(tokenize(R"(program WriteMulti;
-                              begin
-                                Write("Hello", 10, 10.10, var1, var2);
-                              end.)"));
+                                begin
+                                    Write("Hello", 10, 10.10, var1, var2);
+                                end.)"));
     list<list<Node*>> ast = parser.parse();
     vector<Token> expr = {
         { TokenType::STRING_LITERAL, "Hello", 3, 17 },
+        { TokenType::COMMA, ",", 3, 24 },
         { TokenType::INTEGER_LITERAL, "10", 3, 26 },
-        { TokenType::DOUBLE_LITERAL, "10.10", 3, 31 },
-        { TokenType::IDENTIFIER, "var1", 3, 39 },
-        { TokenType::IDENTIFIER, "var2", 3, 45 }
+        { TokenType::COMMA, ",", 3, 28 },
+        { TokenType::DOUBLE_LITERAL, "10.10", 3, 30 },
+        { TokenType::COMMA, ",", 3, 36 },
+        { TokenType::IDENTIFIER, "var1", 3, 38 },
+        { TokenType::COMMA, ",", 3, 42 },
+        { TokenType::IDENTIFIER, "var2", 3, 44 }
     };
     list<list<Node*>> expectedAst = {
         { new ProgramNode("WriteMulti") },

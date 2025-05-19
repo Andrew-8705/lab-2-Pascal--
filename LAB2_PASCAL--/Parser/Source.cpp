@@ -95,7 +95,7 @@ int main()
 					end.)";
 		string problem = R"(program TestWriteCommaEndError;
                                         begin
-                                            Write("End", );
+                                            Write("End", str + str, Lol);
                                         end.)";
 		auto start_tokenize = std::chrono::high_resolution_clock::now();
 		Lexer lexer(problem);

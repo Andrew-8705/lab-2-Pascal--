@@ -237,10 +237,26 @@ private:
     }
 
     void parseWriteStatement() {
+        static const set<TokenType> unexpectedTokensInWrite = {
+           TokenType::KEYWORD_THEN,
+           TokenType::KEYWORD_ELSE,
+           TokenType::KEYWORD_BEGIN,
+           TokenType::KEYWORD_WRITE,
+           TokenType::KEYWORD_READ,
+           TokenType::KEYWORD_IF,
+           TokenType::KEYWORD_END,
+           TokenType::END_OF_PROGRAM,
+           TokenType::SEMICOLON,
+           TokenType::ASSIGN
+        };
+
         require({ TokenType::KEYWORD_WRITE }, "'Write'");
         WriteStatementNode* writeNode = new WriteStatementNode();
         require({ TokenType::LEFT_PAREN }, "'('");
         while (getNextTokenType() != TokenType::RIGHT_PAREN) {
+            if (unexpectedTokensInWrite.count(peek().type)) 
+                throw runtime_error("Syntax Error in Write statement: Unexpected token '" + peek().value + "' within the argument list at line " 
+                    + to_string(peek().line) + ", column " + to_string(peek().column) + ". Expected an expression or ')'.");
             writeNode->expression.push_back(pass());
         }
         writeNode->expression.push_back(pass());
@@ -311,7 +327,7 @@ private:
             require({ TokenType::KEYWORD_END }, "'end'");
         }
         else {
-            parseStatement(); // <- пропускает отсутствие ';' в конце строки, надо как-то пофиксить
+            parseStatement();
         }
         currentBlock = previousBlock;
         return block;

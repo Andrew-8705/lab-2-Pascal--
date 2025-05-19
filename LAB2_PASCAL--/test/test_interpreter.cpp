@@ -399,3 +399,30 @@ TEST(InterpreterTest, if_statement_type_mismatch_throws_error) {
     Interpreter interpreter(ast);
     EXPECT_THROW(interpreter.run(), runtime_error);
 }
+
+TEST(InterpreterTest, write_starts_with_comma_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program ErrorWriteCommaStartError;
+                                        begin
+                                            Write(, "Error");
+                                        end.)");
+    Interpreter interpreter(ast);
+    EXPECT_THROW(interpreter.run(), runtime_error);
+}
+
+TEST(InterpreterTest, write_consecutive_commas_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program ErrorWriteConsecutiveCommasError;
+                                      begin
+                                        Write("A", , "B");
+                                      end.)");
+    Interpreter interpreter(ast);
+    EXPECT_THROW(interpreter.run(), runtime_error);
+}
+
+TEST(InterpreterTest, write_ends_with_comma_throws_error) {
+    list<list<Node*>> ast = parseCode(R"(program ErrorWriteCommaEndError;
+                                        begin
+                                            Write("End", );
+                                        end.)");
+    Interpreter interpreter(ast);
+    EXPECT_THROW(interpreter.run(), runtime_error);
+}
