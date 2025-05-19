@@ -150,7 +150,7 @@ TEST(InterpreterTest, write_integer_literal) {
                                         end.)");
     Interpreter interpreter(ast);
     stringstream ss = captureCout([&]() { interpreter.run(); });
-    EXPECT_EQ(ss.str(), "123\n"); // не проходит поскольку int всегда преобразовывается в double внутри Evaluator
+    EXPECT_EQ(ss.str(), "123\n");
 }
 
 TEST(InterpreterTest, write_double_literal) {
@@ -160,7 +160,7 @@ TEST(InterpreterTest, write_double_literal) {
                                         end.)");
     Interpreter interpreter(ast);
     stringstream ss = captureCout([&]() { interpreter.run(); });
-    EXPECT_EQ(ss.str(), "3.14159\n"); // не проходит поскольку добавляет лишний 0 в конец числа
+    EXPECT_EQ(ss.str(), "3.14159\n");
 }
 
 TEST(InterpreterTest, write_variable) {
@@ -188,7 +188,7 @@ TEST(InterpreterTest, write_multiple_arguments) {
                                         end.)");
     Interpreter interpreter(ast);
     stringstream ss = captureCout([&]() { interpreter.run(); });
-    EXPECT_EQ(ss.str(), "Answer: 42 PI: 3.14\n"); // вызывается исключение хотя не должно (ошибка в Interpreter)
+    EXPECT_EQ(ss.str(), "Answer: 42 PI: 3.14\n");
 }
 
 TEST(InterpreterTest, write_undeclared_variable_in_expression_throws_error) {
@@ -211,7 +211,7 @@ TEST(InterpreterTest, read_integer_variable) {
     Interpreter interpreter(ast);
     simulateCin("123\n", [&]() {
         stringstream ss = captureCout([&]() { interpreter.run(); });
-        EXPECT_EQ(ss.str(), "You entered: 123\n"); // не работает, поскольку выводит: You entered: 123.000000
+        EXPECT_EQ(ss.str(), "You entered: 123\n");
         });
 }
 
@@ -226,7 +226,7 @@ TEST(InterpreterTest, read_double_variable) {
     Interpreter interpreter(ast);
     simulateCin("3.14\n", [&]() {
         stringstream ss = captureCout([&]() { interpreter.run(); });
-        EXPECT_EQ(ss.str(), "You entered: 3.14"); // не работает, поскольку выводит: You entered: 3.140000
+        EXPECT_EQ(ss.str(), "You entered: 3.14\n");
         });
 }
 
@@ -253,15 +253,14 @@ TEST(InterpreterTest, read_multiple_variables) {
                                             c : string;
                                         begin
                                             Read(a, b, c);
-                                            Write("Entered: ", a, b, c);
+                                            Write("Entered: ", a, " ", b, " ", c);
                                         end.)");
     Interpreter interpreter(ast);
     simulateCin("10\n2.71\nTest\n", [&]() {
         stringstream ss = captureCout([&]() { interpreter.run(); });
-        EXPECT_EQ(ss.str(), "Entered: 10 2.71 Test");                    // не работает, ошибка в Interpreter
-        });                                                              // пытаемся сделать evaluate_numeric, но не сработает, так как переменная 'с' является строкой
-}                                                                        // далее пытаемся сделать evaluate_string, но не сработает, так как переменная 'a' является числом
-                                                                         // по итогу выбрасывается исключение
+        EXPECT_EQ(ss.str(), "Entered: 10 2.71 Test\n");
+        });
+}
 
 TEST(InterpreterTest, read_to_constant_throws_error) {
     list<list<Node*>> ast = parseCode(R"(program TestReadConstError;
@@ -296,8 +295,8 @@ TEST(InterpreterTest, read_invalid_integer_input_throws_error) {
                                         end.)");
     Interpreter interpreter(ast);
     simulateCin("abc\n", [&]() {
-        EXPECT_THROW(interpreter.run(), runtime_error); // этот тест не проходится, хотя он и реально выбрасывает исключение
-        });                                             // мб исключение не того типа 
+        EXPECT_THROW(interpreter.run(), runtime_error);
+        });
 }
 
 TEST(InterpreterTest, if_statement_numeric_true) {
@@ -384,8 +383,8 @@ TEST(InterpreterTest, if_statement_missing_comparison_operator_throws_error) {
                                                 Write("Error");
                                         end.)");
     Interpreter interpreter(ast);
-    EXPECT_THROW(interpreter.run(), runtime_error); // программа конечно выбрасывает исключение, но не из Interpreter
-}                                                   // в Interpreter есть исключение только на 2 знака сравнения, но не на отсутствие знака
+    EXPECT_THROW(interpreter.run(), runtime_error);
+}
 
 TEST(InterpreterTest, if_statement_type_mismatch_throws_error) {
     list<list<Node*>> ast = parseCode(R"(program TestIfTypeError; 

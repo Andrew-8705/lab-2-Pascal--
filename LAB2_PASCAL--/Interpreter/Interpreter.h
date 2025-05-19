@@ -251,10 +251,11 @@ private:
 				bool after_sign = false;
 				for (auto& token : ifNode->condition) // разбор
 				{
-					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER || token.type == TokenType::LESS || token.type == TokenType::GREATER_OR_EQUAL || token.type == TokenType::LESS_OR_EQUAL)
+					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER 
+						|| token.type == TokenType::LESS || token.type == TokenType::GREATER_OR_EQUAL || token.type == TokenType::LESS_OR_EQUAL)
 					{
 						if (after_sign) // два знака
-							throw runtime_error("Syntax Error in conditional expression: Multiple comparison operators ('=' or '!=') found");
+							throw runtime_error("Syntax Error in conditional expression: Multiple comparison operators ('=', '<>', '<', '<=', '>', '>=') found");
 						sign = token;
 						after_sign = true;
 						continue;
@@ -262,7 +263,7 @@ private:
 					after_sign ? right_expression.push_back(token) : left_expression.push_back(token);
 				}
 				if(!after_sign)
-					throw runtime_error("Syntax Error in conditional expression: Must be comparision operator!");
+					throw runtime_error("Syntax Error in conditional expression: Must be comparison operator!");
 				variant<double, string> leftExRes;
 				variant<double, string> rightExRes;
 				try
@@ -279,7 +280,7 @@ private:
 					}
 					catch (const exception& exc)
 					{
-						throw runtime_error("Invalid consition expression: " + string(exc.what()));
+						throw runtime_error("Invalid condition expression: " + string(exc.what()));
 					}
 				}
 				
@@ -356,15 +357,14 @@ public:
 
 	void run() {
 		if (!ast.empty()) {
-			//cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' started" << '\n';
+
 			auto it = next(ast.begin());
 
 			while (it != ast.end()) {
 				executeBlock(*it);
 				it++;
 			}
-
-			//cout << "Program '" << static_cast<ProgramNode*>(ast.front().front())->programName << "' finished" << '\n';
+;
 		}
 	}
 
