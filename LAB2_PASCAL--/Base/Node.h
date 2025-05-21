@@ -7,6 +7,7 @@
 #include <variant>
 #include <optional>
 #include <list>
+#include <memory>
 #include "../Base/Token.h"
 
 using namespace std;
@@ -75,10 +76,10 @@ public:
 
 class VariableDeclarationNode : public Node {
 public:
-    Node* identifierList;
+    shared_ptr<Node> identifierList;
     string type;
     VariableDeclarationNode() : Node(NodeType::VARIABLE_DECLARATION) {}
-    VariableDeclarationNode(IdentifierListNode* idList, const string& t)
+    VariableDeclarationNode(shared_ptr<Node> idList, const string& t)
         : Node(NodeType::VARIABLE_DECLARATION), identifierList(idList), type(t) {}
 };
 
@@ -102,20 +103,21 @@ public:
 
 class ReadStatementNode : public Node {
 public:
-    Node* identifierList;
+    shared_ptr<Node> identifierList;
     ReadStatementNode() : Node(NodeType::READ_STATEMENT) {}
-    ReadStatementNode(IdentifierListNode* idList) : Node(NodeType::READ_STATEMENT), identifierList(idList) {}
+    ReadStatementNode(shared_ptr<Node> idList) : Node(NodeType::READ_STATEMENT), identifierList(idList) {}
 };
 
 class IfStatementNode : public Node {
 public:
     vector<Token> condition;
-    list<Node*> thenStatement;
-    list<Node*> elseStatement;
+    list<shared_ptr<Node>> thenStatement;
+    list<shared_ptr<Node>> elseStatement;
     IfStatementNode() : Node(NodeType::IF_STATEMENT) {}
-    IfStatementNode(const vector<Token>& cond, const list<Node*>& thenStmt, const optional<list<Node*>>& elseStmt)
+    IfStatementNode(const vector<Token>& cond, const list<shared_ptr<Node>>& thenStmt, const optional<list<shared_ptr<Node>>>& elseStmt)
         : Node(NodeType::IF_STATEMENT), condition(cond), thenStatement(thenStmt) {
-        if (elseStmt.has_value()) {
+      
+  if (elseStmt.has_value()) {
             elseStatement = elseStmt.value();
         }
     }

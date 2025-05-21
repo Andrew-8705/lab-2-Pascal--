@@ -4,8 +4,9 @@
 #include "../Parser/Parser.h"
 #include <sstream>
 #include <functional>
+#include <memory>
 
-list<list<Node*>> parseCode(const string& code) {
+list<list<shared_ptr<Node>>> parseCode(const string& code) {
     Lexer lexer(code);
     Parser parser(lexer.tokenize());
     return parser.parse();
@@ -29,7 +30,7 @@ void simulateCin(const string& input, function<void()> func) {
 }
 
 TEST(InterpreterTest, declare_and_use_constants) {
-    list<list<Node*>> ast = parseCode(R"(program TestConst; 
+    auto ast = parseCode(R"(program TestConst; 
                                         const 
                                             PI : double = 3.14; 
                                             COUNT : integer = 10; 
@@ -41,7 +42,7 @@ TEST(InterpreterTest, declare_and_use_constants) {
 }
 
 TEST(InterpreterTest, redeclare_constant_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestConstRedecl; 
+    auto ast = parseCode(R"(program TestConstRedecl; 
                                         const 
                                             PI : double = 3.14; 
                                             PI : integer = 10; 
@@ -51,7 +52,7 @@ TEST(InterpreterTest, redeclare_constant_throws_error) {
 }
 
 TEST(InterpreterTest, declare_variables) {
-    list<list<Node*>> ast = parseCode(R"(program TestVar; 
+    auto ast = parseCode(R"(program TestVar; 
                                         var 
                                             x, y : integer; 
                                             z : double; 
@@ -63,7 +64,7 @@ TEST(InterpreterTest, declare_variables) {
 }
 
 TEST(InterpreterTest, redeclare_variable_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestVarRedecl; 
+    auto ast = parseCode(R"(program TestVarRedecl; 
                                         var 
                                             x : integer;    
                                             x : double; 
@@ -74,7 +75,7 @@ TEST(InterpreterTest, redeclare_variable_throws_error) {
 }
 
 TEST(InterpreterTest, declare_variable_same_name_as_constant_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestVarConstConflict; 
+    auto ast = parseCode(R"(program TestVarConstConflict; 
                                         const 
                                             VALUE : integer = 5; 
                                         var  
@@ -86,7 +87,7 @@ TEST(InterpreterTest, declare_variable_same_name_as_constant_throws_error) {
 }
 
 TEST(InterpreterTest, assign_literal_to_variable) {
-    list<list<Node*>> ast = parseCode(R"(program TestAssignLit; 
+    auto ast = parseCode(R"(program TestAssignLit; 
                                         var 
                                             count : integer; 
                                             pi : double; 
@@ -101,7 +102,7 @@ TEST(InterpreterTest, assign_literal_to_variable) {
 }
 
 TEST(InterpreterTest, assign_variable_to_variable) {
-    list<list<Node*>> ast = parseCode(R"(program TestAssignVar; 
+    auto ast = parseCode(R"(program TestAssignVar; 
                                         var 
                                             a : integer; 
                                             b : integer; 
@@ -114,7 +115,7 @@ TEST(InterpreterTest, assign_variable_to_variable) {
 }
 
 TEST(InterpreterTest, assign_to_constant_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestAssignConstError;
+    auto ast = parseCode(R"(program TestAssignConstError;
                                         const
                                             VALUE : integer = 5;
                                         begin
@@ -125,7 +126,7 @@ TEST(InterpreterTest, assign_to_constant_throws_error) {
 }
 
 TEST(InterpreterTest, assign_to_undeclared_variable_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestAssignUndeclaredError;
+    auto ast = parseCode(R"(program TestAssignUndeclaredError;
                                         begin
                                             x := 5;
                                         end.)");
@@ -134,7 +135,7 @@ TEST(InterpreterTest, assign_to_undeclared_variable_throws_error) {
 }
 
 TEST(InterpreterTest, write_string_literal) {
-    list<list<Node*>> ast = parseCode(R"(program TestWriteStr;
+    auto ast = parseCode(R"(program TestWriteStr;
                                         begin
                                             Write("Hello World");
                                         end.)");
@@ -144,7 +145,7 @@ TEST(InterpreterTest, write_string_literal) {
 }
 
 TEST(InterpreterTest, write_integer_literal) {
-    list<list<Node*>> ast = parseCode(R"(program TestWriteInt;
+    auto ast = parseCode(R"(program TestWriteInt;
                                         begin
                                             Write(123);
                                         end.)");
@@ -154,7 +155,7 @@ TEST(InterpreterTest, write_integer_literal) {
 }
 
 TEST(InterpreterTest, write_double_literal) {
-    list<list<Node*>> ast = parseCode(R"(program TestWriteDouble;
+    auto ast = parseCode(R"(program TestWriteDouble;
                                         begin
                                             Write(3.14159);
                                         end.)");
@@ -164,7 +165,7 @@ TEST(InterpreterTest, write_double_literal) {
 }
 
 TEST(InterpreterTest, write_variable) {
-    list<list<Node*>> ast = parseCode(R"(program TestWriteVar;
+    auto ast = parseCode(R"(program TestWriteVar;
                                         var
                                             msg : string;
                                         begin
@@ -177,7 +178,7 @@ TEST(InterpreterTest, write_variable) {
 }
 
 TEST(InterpreterTest, write_multiple_arguments) {
-    list<list<Node*>> ast = parseCode(R"(program TestWriteMulti;
+    auto ast = parseCode(R"(program TestWriteMulti;
                                         var
                                             num : integer;
                                             pi : double;
@@ -192,7 +193,7 @@ TEST(InterpreterTest, write_multiple_arguments) {
 }
 
 TEST(InterpreterTest, write_undeclared_variable_in_expression_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestWriteUndeclaredVarError;
+    auto ast = parseCode(R"(program TestWriteUndeclaredVarError;
                                         begin
                                             Write(unknown);
                                         end.)");
@@ -201,7 +202,7 @@ TEST(InterpreterTest, write_undeclared_variable_in_expression_throws_error) {
 }
 
 TEST(InterpreterTest, read_integer_variable) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadInt;
+    auto ast = parseCode(R"(program TestReadInt;
                                         var
                                             num : integer;
                                         begin
@@ -216,7 +217,7 @@ TEST(InterpreterTest, read_integer_variable) {
 }
 
 TEST(InterpreterTest, read_double_variable) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadDouble;
+    auto ast = parseCode(R"(program TestReadDouble;
                                         var
                                             pi : double;
                                         begin
@@ -231,7 +232,7 @@ TEST(InterpreterTest, read_double_variable) {
 }
 
 TEST(InterpreterTest, read_string_variable) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadString;
+    auto ast = parseCode(R"(program TestReadString;
                                         var
                                             msg : string;
                                         begin
@@ -246,7 +247,7 @@ TEST(InterpreterTest, read_string_variable) {
 }
 
 TEST(InterpreterTest, read_multiple_variables) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadMulti;
+    auto ast = parseCode(R"(program TestReadMulti;
                                         var
                                             a : integer;
                                             b : double;
@@ -263,7 +264,7 @@ TEST(InterpreterTest, read_multiple_variables) {
 }
 
 TEST(InterpreterTest, read_to_constant_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadConstError;
+    auto ast = parseCode(R"(program TestReadConstError;
                                         const
                                             VALUE : integer = 5;
                                         begin
@@ -276,7 +277,7 @@ TEST(InterpreterTest, read_to_constant_throws_error) {
 }
 
 TEST(InterpreterTest, read_undeclared_variable_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadUndeclaredError;
+    auto ast = parseCode(R"(program TestReadUndeclaredError;
                                         begin
                                             Read(unknown);
                                         end.)");
@@ -287,7 +288,7 @@ TEST(InterpreterTest, read_undeclared_variable_throws_error) {
 }
 
 TEST(InterpreterTest, read_invalid_integer_input_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestReadInvalidIntError;
+    auto ast = parseCode(R"(program TestReadInvalidIntError;
                                         var
                                             num : integer;
                                         begin
@@ -300,7 +301,7 @@ TEST(InterpreterTest, read_invalid_integer_input_throws_error) {
 }
 
 TEST(InterpreterTest, if_statement_numeric_true) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfTrue;
+    auto ast = parseCode(R"(program TestIfTrue;
                                         var
                                             x : integer;
                                         begin
@@ -314,7 +315,7 @@ TEST(InterpreterTest, if_statement_numeric_true) {
 }
 
 TEST(InterpreterTest, if_statement_numeric_false_no_else) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfFalseNoElse;
+    auto ast = parseCode(R"(program TestIfFalseNoElse;
                                         var
                                             x : integer;
                                         begin
@@ -328,7 +329,7 @@ TEST(InterpreterTest, if_statement_numeric_false_no_else) {
 }
 
 TEST(InterpreterTest, if_statement_numeric_false_with_else) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfFalseElse;
+    auto ast = parseCode(R"(program TestIfFalseElse;
                                         var
                                             x : integer;
                                         begin
@@ -344,7 +345,7 @@ TEST(InterpreterTest, if_statement_numeric_false_with_else) {
 }
 
 TEST(InterpreterTest, if_statement_string_equal_true) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfStrTrue;
+    auto ast = parseCode(R"(program TestIfStrTrue;
                                         var
                                             msg : string;
                                         begin
@@ -358,7 +359,7 @@ TEST(InterpreterTest, if_statement_string_equal_true) {
 }
 
 TEST(InterpreterTest, if_statement_string_equal_false_with_else) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfStrFalseElse;
+    auto ast = parseCode(R"(program TestIfStrFalseElse;
                                         var
                                             msg : string;
                                         begin
@@ -374,7 +375,7 @@ TEST(InterpreterTest, if_statement_string_equal_false_with_else) {
 }
 
 TEST(InterpreterTest, if_statement_missing_comparison_operator_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfNoOpError;
+    auto ast = parseCode(R"(program TestIfNoOpError;
                                         var
                                             x : integer;
                                         begin
@@ -387,7 +388,7 @@ TEST(InterpreterTest, if_statement_missing_comparison_operator_throws_error) {
 }
 
 TEST(InterpreterTest, if_statement_type_mismatch_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program TestIfTypeError; 
+    auto ast = parseCode(R"(program TestIfTypeError; 
                                         var 
                                             num : integer; 
                                             msg : string; 
@@ -401,7 +402,7 @@ TEST(InterpreterTest, if_statement_type_mismatch_throws_error) {
 }
 
 TEST(InterpreterTest, write_starts_with_comma_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program ErrorWriteCommaStartError;
+    auto ast = parseCode(R"(program ErrorWriteCommaStartError;
                                         begin
                                             Write(, "Error");
                                         end.)");
@@ -410,7 +411,7 @@ TEST(InterpreterTest, write_starts_with_comma_throws_error) {
 }
 
 TEST(InterpreterTest, write_consecutive_commas_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program ErrorWriteConsecutiveCommasError;
+    auto ast = parseCode(R"(program ErrorWriteConsecutiveCommasError;
                                       begin
                                         Write("A", , "B");
                                       end.)");
@@ -419,7 +420,7 @@ TEST(InterpreterTest, write_consecutive_commas_throws_error) {
 }
 
 TEST(InterpreterTest, write_ends_with_comma_throws_error) {
-    list<list<Node*>> ast = parseCode(R"(program ErrorWriteCommaEndError;
+    auto ast = parseCode(R"(program ErrorWriteCommaEndError;
                                         begin
                                             Write("End", );
                                         end.)");

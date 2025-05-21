@@ -5,6 +5,9 @@
 #include "../Parser/Parser.h"
 #include <optional>
 #include <variant>
+#include <memory>
+
+using namespace std;
 
 bool CompareVariant(const variant<int, double, string>& v1, const variant<int, double, string>& v2) {
     if (v1.index() != v2.index()) return false;
@@ -14,34 +17,40 @@ bool CompareVariant(const variant<int, double, string>& v1, const variant<int, d
     return true;
 }
 
-bool CompareNodes(Node* n1, Node* n2) {
+bool CompareNodes(shared_ptr<Node> n1, shared_ptr<Node> n2) {
     if (n1 == nullptr && n2 == nullptr) return true;
     if (n1 == nullptr || n2 == nullptr) return false;
 
     if (n1->type != n2->type) return false;
 
     switch (n1->type) {
-    case Node::NodeType::PROGRAM_STATEMENT:
-        return static_cast<ProgramNode*>(n1)->programName == static_cast<ProgramNode*>(n2)->programName;
+    case Node::NodeType::PROGRAM_STATEMENT: {
+        shared_ptr<ProgramNode> p1 = dynamic_pointer_cast<ProgramNode>(n1);
+        shared_ptr<ProgramNode> p2 = dynamic_pointer_cast<ProgramNode>(n2);
+        if (!p1 || !p2) return false;
+        return p1->programName == p2->programName;
+    }
     case Node::NodeType::CONST_SECTION:
     case Node::NodeType::VAR_SECTION:
     case Node::NodeType::BEGIN_SECTION:
         return true;
     case Node::NodeType::CONST_DECLARATION: {
-        ConstDeclarationNode* c1 = static_cast<ConstDeclarationNode*>(n1);
-        ConstDeclarationNode* c2 = static_cast<ConstDeclarationNode*>(n2);
+        shared_ptr<ConstDeclarationNode> c1 = dynamic_pointer_cast<ConstDeclarationNode>(n1);
+        shared_ptr<ConstDeclarationNode> c2 = dynamic_pointer_cast<ConstDeclarationNode>(n2);
+        if (!c1 || !c2) return false;
         return c1->identifier == c2->identifier && c1->type == c2->type && CompareVariant(c1->value, c2->value);
     }
     case Node::NodeType::VARIABLE_DECLARATION: {
-        VariableDeclarationNode* v1 = static_cast<VariableDeclarationNode*>(n1);
-        VariableDeclarationNode* v2 = static_cast<VariableDeclarationNode*>(n2);
-        if (v1->identifierList == nullptr && v2->identifierList == nullptr) return true;
-        if (v1->identifierList == nullptr || v2->identifierList == nullptr) return false;
-        return CompareNodes(v1->identifierList, v2->identifierList) && v1->type == v2->type;
+        shared_ptr<VariableDeclarationNode> v1 = dynamic_pointer_cast<VariableDeclarationNode>(n1);
+        shared_ptr<VariableDeclarationNode> v2 = dynamic_pointer_cast<VariableDeclarationNode>(n2);
+        if (!v1 || !v2) return false;
+        if (!CompareNodes(v1->identifierList, v2->identifierList)) return false;
+        return v1->type == v2->type;
     }
     case Node::NodeType::IDENTIFIER_LIST: {
-        IdentifierListNode* l1 = static_cast<IdentifierListNode*>(n1);
-        IdentifierListNode* l2 = static_cast<IdentifierListNode*>(n2);
+        shared_ptr<IdentifierListNode> l1 = dynamic_pointer_cast<IdentifierListNode>(n1);
+        shared_ptr<IdentifierListNode> l2 = dynamic_pointer_cast<IdentifierListNode>(n2);
+        if (!l1 || !l2) return false;
         if (l1->identifiers.size() != l2->identifiers.size()) return false;
         auto it1 = l1->identifiers.begin();
         auto it2 = l2->identifiers.begin();
@@ -53,8 +62,9 @@ bool CompareNodes(Node* n1, Node* n2) {
         return true;
     }
     case Node::NodeType::ASSIGNMENT_STATEMENT: {
-        AssignmentStatementNode* a1 = static_cast<AssignmentStatementNode*>(n1);
-        AssignmentStatementNode* a2 = static_cast<AssignmentStatementNode*>(n2);
+        shared_ptr<AssignmentStatementNode> a1 = dynamic_pointer_cast<AssignmentStatementNode>(n1);
+        shared_ptr<AssignmentStatementNode> a2 = dynamic_pointer_cast<AssignmentStatementNode>(n2);
+        if (!a1 || !a2) return false;
         if (a1->variableName != a2->variableName || a1->expression.size() != a2->expression.size()) return false;
         for (size_t i = 0; i < a1->expression.size(); ++i) {
             if (a1->expression[i].type != a2->expression[i].type || a1->expression[i].value != a2->expression[i].value) return false;
@@ -62,8 +72,9 @@ bool CompareNodes(Node* n1, Node* n2) {
         return true;
     }
     case Node::NodeType::WRITE_STATEMENT: {
-        WriteStatementNode* w1 = static_cast<WriteStatementNode*>(n1);
-        WriteStatementNode* w2 = static_cast<WriteStatementNode*>(n2);
+        shared_ptr<WriteStatementNode> w1 = dynamic_pointer_cast<WriteStatementNode>(n1);
+        shared_ptr<WriteStatementNode> w2 = dynamic_pointer_cast<WriteStatementNode>(n2);
+        if (!w1 || !w2) return false;
         if (w1->expression.size() != w2->expression.size()) return false;
         for (size_t i = 0; i < w1->expression.size(); ++i) {
             if (w1->expression[i].type != w2->expression[i].type || w1->expression[i].value != w2->expression[i].value) return false;
@@ -71,19 +82,21 @@ bool CompareNodes(Node* n1, Node* n2) {
         return true;
     }
     case Node::NodeType::READ_STATEMENT: {
-        ReadStatementNode* r1 = static_cast<ReadStatementNode*>(n1);
-        ReadStatementNode* r2 = static_cast<ReadStatementNode*>(n2);
-        if (r1->identifierList == nullptr && r2->identifierList == nullptr) return true;
-        if (r1->identifierList == nullptr || r2->identifierList == nullptr) return false;
+        shared_ptr<ReadStatementNode> r1 = dynamic_pointer_cast<ReadStatementNode>(n1);
+        shared_ptr<ReadStatementNode> r2 = dynamic_pointer_cast<ReadStatementNode>(n2);
+        if (!r1 || !r2) return false;
         return CompareNodes(r1->identifierList, r2->identifierList);
     }
     case Node::NodeType::IF_STATEMENT: {
-        IfStatementNode* i1 = static_cast<IfStatementNode*>(n1);
-        IfStatementNode* i2 = static_cast<IfStatementNode*>(n2);
+        shared_ptr<IfStatementNode> i1 = dynamic_pointer_cast<IfStatementNode>(n1);
+        shared_ptr<IfStatementNode> i2 = dynamic_pointer_cast<IfStatementNode>(n2);
+        if (!i1 || !i2) return false;
+
         if (i1->condition.size() != i2->condition.size()) return false;
         for (size_t i = 0; i < i1->condition.size(); ++i) {
             if (i1->condition[i].type != i2->condition[i].type || i1->condition[i].value != i2->condition[i].value) return false;
         }
+
         if (i1->thenStatement.size() != i2->thenStatement.size()) return false;
         auto thenIt1 = i1->thenStatement.begin();
         auto thenIt2 = i2->thenStatement.begin();
@@ -92,6 +105,7 @@ bool CompareNodes(Node* n1, Node* n2) {
             ++thenIt1;
             ++thenIt2;
         }
+
         if (i1->elseStatement.size() != i2->elseStatement.size()) return false;
         auto elseIt1 = i1->elseStatement.begin();
         auto elseIt2 = i2->elseStatement.begin();
@@ -107,7 +121,7 @@ bool CompareNodes(Node* n1, Node* n2) {
     }
 }
 
-bool CompareAST(const list<list<Node*>>& ast1, const list<list<Node*>>& ast2) {
+bool CompareAST(const list<list<shared_ptr<Node>>>& ast1, const list<list<shared_ptr<Node>>>& ast2) {
     if (ast1.size() != ast2.size()) return false;
     auto it1 = ast1.begin();
     auto it2 = ast2.begin();
@@ -132,161 +146,141 @@ vector<Token> tokenize(const string& source) {
 }
 
 TEST(ParserTest, can_parse_empty_program) {
-    Parser parser(tokenize(R"(program Empty; 
-                              begin 
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("Empty") },
-        { new BeginSectionNode() }
+    Parser parser(tokenize(R"(program Empty;
+                                  begin
+                                  end.)"));
+    auto ast = parser.parse();
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("Empty") },
+        { make_shared<BeginSectionNode>() }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
 TEST(ParserTest, can_parse_all_types_in_const_declaration) {
-    Parser parser(tokenize(R"(program ConstDecl; 
-                              const 
-                                PI : double = 3.14; 
-                                Count : integer = 100;
-                                message : string = "Hello";
-                              begin end.)"));
-    list<list<Node*>> ast = parser.parse();
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("ConstDecl") },
-        { new ConstSectionNode(), new ConstDeclarationNode("PI", "double", 3.14), new ConstDeclarationNode("Count", "integer", 100), 
-            new ConstDeclarationNode("message", "string", "Hello")
+    Parser parser(tokenize(R"(program ConstDecl;
+                                  const
+                                    PI : double = 3.14;
+                                    Count : integer = 100;
+                                    message : string = "Hello";
+                                  begin end.)"));
+    auto ast = parser.parse();
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("ConstDecl") },
+        { make_shared<ConstSectionNode>(),
+          make_shared<ConstDeclarationNode>("PI", "double", 3.14),
+          make_shared<ConstDeclarationNode>("Count", "integer", 100),
+          make_shared<ConstDeclarationNode>("message", "string", "Hello")
         },
-        { new BeginSectionNode() }
+        { make_shared<BeginSectionNode>() }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
 TEST(ParserTest, can_parse_all_types_in_var_section) {
-    Parser parser(tokenize(R"(program VarSection; 
-                              var 
-                                x, y : double;
-                                count : integer;
-                                message1, message2 : string; 
-                              begin end.)"));
-    list<list<Node*>> ast = parser.parse();
-    IdentifierListNode* idList1 = new IdentifierListNode({ "x", "y" });
-    IdentifierListNode* idList2 = new IdentifierListNode({ "count" });
-    IdentifierListNode* idList3 = new IdentifierListNode({ "message1", "message2"});
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("VarSection") },
-        { new VarSectionNode(), new VariableDeclarationNode(idList1, "double"), new VariableDeclarationNode(idList2, "integer"),
-            new VariableDeclarationNode(idList3, "string") },
-        { new BeginSectionNode() }
+    Parser parser(tokenize(R"(program VarSection;
+                                  var
+                                    x, y : double;
+                                    count : integer;
+                                    message1, message2 : string;
+                                  begin end.)"));
+    auto ast = parser.parse();
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("VarSection") },
+        { make_shared<VarSectionNode>(),
+          make_shared<VariableDeclarationNode>(make_shared<IdentifierListNode>(initializer_list<string>{ "x", "y" }), "double"),
+          make_shared<VariableDeclarationNode>(make_shared<IdentifierListNode>(initializer_list<string>{ "count" }), "integer"),
+          make_shared<VariableDeclarationNode>(make_shared<IdentifierListNode>(initializer_list<string>{ "message1", "message2"}), "string")
+        },
+        { make_shared<BeginSectionNode>() }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    delete idList1;
-    delete idList2;
 }
 
 TEST(ParserTest, can_parse_assignment_statement) {
-    Parser parser(tokenize(R"(program AssignStmt; 
-                              begin 
-                                counter := 10; 
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
-    vector<Token> expression = { { TokenType::INTEGER_LITERAL, "10", 1, 18 } };
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("AssignStmt") },
-        { new BeginSectionNode(), new AssignmentStatementNode("counter", expression) }
+    Parser parser(tokenize(R"(program AssignStmt;
+                                  begin
+                                    counter := 10;
+                                  end.)"));
+    auto ast = parser.parse();
+    vector<Token> expression = { { TokenType::INTEGER_LITERAL, "10", 3, 31 } };
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("AssignStmt") },
+        { make_shared<BeginSectionNode>(), make_shared<AssignmentStatementNode>("counter", expression) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
 TEST(ParserTest, can_parse_write_statement_single_literal) {
-    Parser parser(tokenize(R"(program WriteLit; 
-                             begin 
-                                Write("Hello"); 
-                             end.)"));
-    list<list<Node*>> ast = parser.parse();
-    vector<Token> expression = { { TokenType::STRING_LITERAL, "Hello", 1, 19 } };
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("WriteLit") },
-        { new BeginSectionNode(), new WriteStatementNode(expression) }
+    Parser parser(tokenize(R"(program WriteLit;
+                                 begin
+                                   Write("Hello");
+                                 end.)"));
+    auto ast = parser.parse();
+    vector<Token> expression = { { TokenType::STRING_LITERAL, "Hello", 3, 26 } };
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("WriteLit") },
+        { make_shared<BeginSectionNode>(), make_shared<WriteStatementNode>(expression) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
 TEST(ParserTest, can_parse_read_statement_single_identifier) {
-    Parser parser(tokenize(R"(program ReadId; 
-                              var 
-                                input: string; 
-                              begin 
-                                Read(input); 
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
-    IdentifierListNode* idList = new IdentifierListNode({ "input" });
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("ReadId") },
-        { new VarSectionNode(), new VariableDeclarationNode(idList, "string") },
-        { new BeginSectionNode(), new ReadStatementNode(idList) }
+    Parser parser(tokenize(R"(program ReadId;
+                                  var
+                                    input: string;
+                                  begin
+                                    Read(input);
+                                  end.)"));
+    auto ast = parser.parse();
+    shared_ptr<IdentifierListNode> idList = make_shared<IdentifierListNode>(initializer_list<string>{ "input" });
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("ReadId") },
+        { make_shared<VarSectionNode>(), make_shared<VariableDeclarationNode>(idList, "string") },
+        { make_shared<BeginSectionNode>(), make_shared<ReadStatementNode>(idList) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    delete idList;
 }
 
 TEST(ParserTest, can_parse_if_statement_without_else) {
-    Parser parser(tokenize(R"(program IfNoElse; 
-                              begin 
-                                if (flag) then 
-                                    result := 1; 
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
-    vector<Token> condition = { { TokenType::IDENTIFIER, "flag", 1, 15 } };
-    list<Node*> thenBlock = { new AssignmentStatementNode("result", { { TokenType::INTEGER_LITERAL, "1", 1, 28 } }) };
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("IfNoElse") },
-        { new BeginSectionNode(), new IfStatementNode(condition, thenBlock, nullopt) }
+    Parser parser(tokenize(R"(program IfNoElse;
+                                  begin
+                                    if (flag) then
+                                        result := 1;
+                                  end.)"));
+    auto ast = parser.parse();
+    vector<Token> condition = { { TokenType::IDENTIFIER, "flag", 3, 30 } };
+    list<shared_ptr<Node>> thenBlock = { make_shared<AssignmentStatementNode>("result", initializer_list<Token>{ { TokenType::INTEGER_LITERAL, "1", 4, 38 } }) };
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("IfNoElse") },
+        { make_shared<BeginSectionNode>(), make_shared<IfStatementNode>(condition, thenBlock, nullopt) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    for (Node* node : thenBlock) delete node;
 }
 
 TEST(ParserTest, can_parse_if_statement_with_else) {
-    Parser parser(tokenize(R"(program IfElse; 
-                              begin 
-                                if (count > 0) then 
-                                    value := 1;
-                                else
-                                    value := -1; 
-                             end.)"));
-    list<list<Node*>> ast = parser.parse();
-    vector<Token> condition = { { TokenType::IDENTIFIER, "count", 1, 15 }, { TokenType::GREATER, ">", 1, 21 }, { TokenType::INTEGER_LITERAL, "0", 1, 23 } };
-    list<Node*> thenBlock = { new AssignmentStatementNode("value", { { TokenType::INTEGER_LITERAL, "1", 1, 33 } }) };
-    list<Node*> elseBlock = { new AssignmentStatementNode("value", { { TokenType::MINUS, "-", 1, 45 }, { TokenType::INTEGER_LITERAL, "1", 1, 46 } }) };
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("IfElse") },
-        { new BeginSectionNode(), new IfStatementNode(condition, thenBlock, elseBlock) }
+    Parser parser(tokenize(R"(program IfElse;
+                                  begin
+                                    if (count > 0) then
+                                        value := 1;
+                                    else
+                                        value := -1;
+                                  end.)"));
+    auto ast = parser.parse();
+    vector<Token> condition = { { TokenType::IDENTIFIER, "count", 3, 29 }, { TokenType::GREATER, ">", 3, 35 }, { TokenType::INTEGER_LITERAL, "0", 3, 37 } };
+    list<shared_ptr<Node>> thenBlock = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::INTEGER_LITERAL, "1", 4, 39 } }) };
+    list<shared_ptr<Node>> elseBlock = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::MINUS, "-", 6, 39 }, { TokenType::INTEGER_LITERAL, "1", 6, 40 } }) };
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("IfElse") },
+        { make_shared<BeginSectionNode>(), make_shared<IfStatementNode>(condition, thenBlock, elseBlock) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    for (Node* node : thenBlock) delete node;
-    for (Node* node : elseBlock) delete node;
 }
 
 TEST(ParserTest, handles_syntax_error_missing_semicolon_program_header) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorNoSemicolon 
-                                  begin 
+        Parser parser(tokenize(R"(program ErrorNoSemicolon
+                                  begin
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -294,10 +288,10 @@ TEST(ParserTest, handles_syntax_error_missing_semicolon_program_header) {
 
 TEST(ParserTest, handles_syntax_error_missing_semicolon_const_declaration) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorConstNoSemicolon; 
-                                  const 
-                                    PI : double = 3.14 
-                                  begin 
+        Parser parser(tokenize(R"(program ErrorConstNoSemicolon;
+                                  const
+                                    PI : double = 3.14
+                                  begin
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -305,10 +299,10 @@ TEST(ParserTest, handles_syntax_error_missing_semicolon_const_declaration) {
 
 TEST(ParserTest, handles_syntax_error_missing_colon_const_declaration) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorConstNoColon; 
-                                  const 
-                                    PI double = 3.14; 
-                                  begin 
+        Parser parser(tokenize(R"(program ErrorConstNoColon;
+                                  const
+                                    PI double = 3.14;
+                                  begin
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -317,9 +311,9 @@ TEST(ParserTest, handles_syntax_error_missing_colon_const_declaration) {
 TEST(ParserTest, handles_syntax_error_missing_equal_const_declaration) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorConstNoEqual;
-                                  const 
-                                    PI : double 3.14; 
-                                  begin 
+                                  const
+                                    PI : double 3.14;
+                                  begin
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -327,10 +321,10 @@ TEST(ParserTest, handles_syntax_error_missing_equal_const_declaration) {
 
 TEST(ParserTest, handles_syntax_error_missing_semicolon_var_declaration) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorVarNoSemicolon; 
-                                  var 
-                                    value : integer 
-                                  begin 
+        Parser parser(tokenize(R"(program ErrorVarNoSemicolon;
+                                  var
+                                    value : integer
+                                  begin
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -338,10 +332,10 @@ TEST(ParserTest, handles_syntax_error_missing_semicolon_var_declaration) {
 
 TEST(ParserTest, handles_syntax_error_missing_colon_var_declaration) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorVarNoColon; 
-                                  var 
-                                    value integer; 
-                                  begin 
+        Parser parser(tokenize(R"(program ErrorVarNoColon;
+                                  var
+                                    value integer;
+                                  begin
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -350,7 +344,7 @@ TEST(ParserTest, handles_syntax_error_missing_colon_var_declaration) {
 TEST(ParserTest, handles_syntax_error_missing_semicolon_assignment) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorAss;
-                                  begin 
+                                  begin
                                     counter := a
                                   end.)"));
         parser.parse();
@@ -359,9 +353,9 @@ TEST(ParserTest, handles_syntax_error_missing_semicolon_assignment) {
 
 TEST(ParserTest, handles_syntax_error_missing_left_paren_write) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorWriteNoLParen; 
-                                  begin 
-                                    Write value); 
+        Parser parser(tokenize(R"(program ErrorWriteNoLParen;
+                                  begin
+                                    Write value);
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -370,8 +364,8 @@ TEST(ParserTest, handles_syntax_error_missing_left_paren_write) {
 TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorWriteNoRParen;
-                                  begin 
-                                    Write(value; 
+                                  begin
+                                    Write(value;
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -379,9 +373,9 @@ TEST(ParserTest, handles_syntax_error_missing_right_paren_write) {
 
 TEST(ParserTest, handles_syntax_error_missing_left_paren_read) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorReadNoLParen; 
-                                  begin 
-                                    Read value); 
+        Parser parser(tokenize(R"(program ErrorReadNoLParen;
+                                  begin
+                                    Read value);
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -390,8 +384,8 @@ TEST(ParserTest, handles_syntax_error_missing_left_paren_read) {
 TEST(ParserTest, handles_syntax_error_missing_right_paren_read) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorReadNoRParen;
-                                  begin 
-                                    Read(value; 
+                                  begin
+                                    Read(value;
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -399,10 +393,10 @@ TEST(ParserTest, handles_syntax_error_missing_right_paren_read) {
 
 TEST(ParserTest, handles_syntax_error_missing_then_if) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorIfNoThen; 
-                                  begin 
-                                    if (x > 0) 
-                                        y := 1; 
+        Parser parser(tokenize(R"(program ErrorIfNoThen;
+                                  begin
+                                    if (x > 0)
+                                        y := 1;
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -410,11 +404,11 @@ TEST(ParserTest, handles_syntax_error_missing_then_if) {
 
 TEST(ParserTest, handles_syntax_error_missing_right_paren_if_condition) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program ErrorIfNoRParen; 
-                                  begin 
-                                    if (x > 0 then 
-                                        y := 1; 
-                               end.)"));
+        Parser parser(tokenize(R"(program ErrorIfNoRParen;
+                                  begin
+                                    if (x > 0 then
+                                        y := 1;
+                                  end.)"));
         parser.parse();
         }, runtime_error);
 }
@@ -422,9 +416,9 @@ TEST(ParserTest, handles_syntax_error_missing_right_paren_if_condition) {
 TEST(ParserTest, handles_syntax_error_unexpected_token_after_var) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorUnexpectedAfterVar;
-                                  var 
-                                  begin 
-                                    x : integer; 
+                                  var
+                                  begin
+                                    x : integer;
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -433,7 +427,7 @@ TEST(ParserTest, handles_syntax_error_unexpected_token_after_var) {
 TEST(ParserTest, handles_syntax_error_missing_end_dot) {
     EXPECT_THROW({
         Parser parser(tokenize(R"(program ErrorMissingEndDot;
-                                  begin 
+                                  begin
                                   end)"));
         parser.parse();
         }, runtime_error);
@@ -441,9 +435,9 @@ TEST(ParserTest, handles_syntax_error_missing_end_dot) {
 
 TEST(ParserTest, handles_syntax_error_empty_write_statement) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program EmptyWrite; 
-                                  begin 
-                                    Write(); 
+        Parser parser(tokenize(R"(program EmptyWrite;
+                                  begin
+                                    Write();
                                   end.)"));
         parser.parse();
         }, runtime_error);
@@ -451,152 +445,140 @@ TEST(ParserTest, handles_syntax_error_empty_write_statement) {
 
 TEST(ParserTest, handles_empty_read_statement_error) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program EmptyRead; 
-                                  begin 
-                                    Read(); 
+        Parser parser(tokenize(R"(program EmptyRead;
+                                  begin
+                                    Read();
                                   end.)"));
         parser.parse();
         }, runtime_error);
 }
 
 TEST(ParserTest, can_parse_assignment_with_identifier) {
-    Parser parser(tokenize(R"(program AssignId; 
-                              begin 
-                                a := b;
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("AssignId") },
-        { new BeginSectionNode(), new AssignmentStatementNode("a", { { TokenType::IDENTIFIER, "b", 3, 33 } }) }
+    Parser parser(tokenize(R"(program AssignId;
+                                  begin
+                                    a := b;
+                                  end.)"));
+    auto ast = parser.parse();
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("AssignId") },
+        { make_shared<BeginSectionNode>(), make_shared<AssignmentStatementNode>("a", initializer_list<Token>{ { TokenType::IDENTIFIER, "b", 3, 31 } }) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
 TEST(ParserTest, can_parse_write_statement_multiple_args_with_commas) {
     Parser parser(tokenize(R"(program WriteMulti;
-                                begin
+                                  begin
                                     Write("Hello", 10, 10.10, var1, var2);
-                                end.)"));
-    list<list<Node*>> ast = parser.parse();
+                                  end.)"));
+    auto ast = parser.parse();
     vector<Token> expr = {
-        { TokenType::STRING_LITERAL, "Hello", 3, 17 },
-        { TokenType::COMMA, ",", 3, 24 },
-        { TokenType::INTEGER_LITERAL, "10", 3, 26 },
-        { TokenType::COMMA, ",", 3, 28 },
-        { TokenType::DOUBLE_LITERAL, "10.10", 3, 30 },
-        { TokenType::COMMA, ",", 3, 36 },
-        { TokenType::IDENTIFIER, "var1", 3, 38 },
-        { TokenType::COMMA, ",", 3, 42 },
-        { TokenType::IDENTIFIER, "var2", 3, 44 }
+        { TokenType::STRING_LITERAL, "Hello", 3, 26 },
+        { TokenType::COMMA, ",", 3, 33 },
+        { TokenType::INTEGER_LITERAL, "10", 3, 35 },
+        { TokenType::COMMA, ",", 3, 37 },
+        { TokenType::DOUBLE_LITERAL, "10.10", 3, 39 },
+        { TokenType::COMMA, ",", 3, 45 },
+        { TokenType::IDENTIFIER, "var1", 3, 47 },
+        { TokenType::COMMA, ",", 3, 51 },
+        { TokenType::IDENTIFIER, "var2", 3, 53 }
     };
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("WriteMulti") },
-        { new BeginSectionNode(), new WriteStatementNode(expr) }
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("WriteMulti") },
+        { make_shared<BeginSectionNode>(), make_shared<WriteStatementNode>(expr) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
 }
 
 TEST(ParserTest, can_parse_read_statement_multiple_ids) {
     Parser parser(tokenize(R"(program ReadMulti;
-                                 var
-                                     a, b: integer;
-                                     c : double;
-                                     d, e : string;
-                                 begin
-                                     Read(a, b, c, d, e);
-                                 end.)"));
-    list<list<Node*>> ast = parser.parse();
-    IdentifierListNode* idList = new IdentifierListNode({ "a", "b", "c", "d", "e" });
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("ReadMulti") },
-        { new VarSectionNode(),
-          new VariableDeclarationNode(new IdentifierListNode({ "a", "b" }), "integer"),
-          new VariableDeclarationNode(new IdentifierListNode({ "c" }), "double"),
-          new VariableDeclarationNode(new IdentifierListNode({ "d", "e" }), "string")
+                                  var
+                                    a, b: integer;
+                                    c : double;
+                                    d, e : string;
+                                  begin
+                                    Read(a, b, c, d, e);
+                                  end.)"));
+    auto ast = parser.parse();
+    shared_ptr<IdentifierListNode> readIdList = make_shared<IdentifierListNode>(initializer_list<string>{ "a", "b", "c", "d", "e" });
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("ReadMulti") },
+        { make_shared<VarSectionNode>(),
+          make_shared<VariableDeclarationNode>(make_shared<IdentifierListNode>(initializer_list<string>{ "a", "b" }), "integer"),
+          make_shared<VariableDeclarationNode>(make_shared<IdentifierListNode>(initializer_list<string>{ "c" }), "double"),
+          make_shared<VariableDeclarationNode>(make_shared<IdentifierListNode>(initializer_list<string>{ "d", "e" }), "string")
         },
-        { new BeginSectionNode(), new ReadStatementNode(idList) }
+        { make_shared<BeginSectionNode>(), make_shared<ReadStatementNode>(readIdList) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    delete idList;
 }
 
 
 TEST(ParserTest, can_parse_nested_if_without_else) {
     Parser parser(tokenize(R"(program NestedIfNoElse;
-                              begin
-                                if (a > 0) then
-                                    if (b < 10) then
-                                        result := 5;
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
+                                  begin
+                                    if (a > 0) then
+                                        if (b < 10) then
+                                            result := 5;
+                                  end.)"));
+    auto ast = parser.parse();
 
-    vector<Token> condition1 = { { TokenType::IDENTIFIER, "a", 1, 8 }, { TokenType::GREATER, ">", 1, 10 }, { TokenType::INTEGER_LITERAL, "0", 1, 12 } };
-    vector<Token> condition2 = { { TokenType::IDENTIFIER, "b", 2, 12 }, { TokenType::LESS, "<", 2, 14 }, { TokenType::INTEGER_LITERAL, "10", 2, 16 } };
-    list<Node*> thenBlockInner = { new AssignmentStatementNode("result", { { TokenType::INTEGER_LITERAL, "5", 3, 17 } }) };
-    list<Node*> thenBlockOuter = { new IfStatementNode(condition2, thenBlockInner, nullopt) };
+    vector<Token> condition1 = { { TokenType::IDENTIFIER, "a", 3, 30 }, 
+                                    { TokenType::GREATER, ">", 3, 32 }, 
+                                    { TokenType::INTEGER_LITERAL, "0", 3, 34 } };
+    vector<Token> condition2 = { { TokenType::IDENTIFIER, "b", 4, 38 }, 
+                                    { TokenType::LESS, "<", 4, 40 }, 
+                                    { TokenType::INTEGER_LITERAL, "10", 4, 42 } };
+    list<shared_ptr<Node>> thenBlockInner = { make_shared<AssignmentStatementNode>("result", initializer_list<Token>{ { TokenType::INTEGER_LITERAL, "5", 5, 49 } }) };
+    list<shared_ptr<Node>> thenBlockOuter = { make_shared<IfStatementNode>(condition2, thenBlockInner, nullopt) };
 
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("NestedIfNoElse") },
-        { new BeginSectionNode(), new IfStatementNode(condition1, thenBlockOuter, nullopt) }
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("NestedIfNoElse") },
+        { make_shared<BeginSectionNode>(), make_shared<IfStatementNode>(condition1, thenBlockOuter, nullopt) }
     };
 
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    for (Node* node : thenBlockInner) delete node;
-    for (Node* node : thenBlockOuter) delete node;
 }
 
 TEST(ParserTest, can_parse_nested_if_with_else) {
     Parser parser(tokenize(R"(program NestedIfWithElse;
-                              begin
-                                if (x = 1) then
-                                    if (y <> 2) then
-                                        value := true;
+                                  begin
+                                    if (x = 1) then
+                                        if (y <> 2) then
+                                            value := true;
+                                        else
+                                            value := false;
                                     else
-                                        value := false;
-                                else
-                                    error := -1;
-                              end.)"));
-    list<list<Node*>> ast = parser.parse();
+                                        error := -1;
+                                  end.)"));
+    auto ast = parser.parse();
 
-    vector<Token> conditionOuter = { { TokenType::IDENTIFIER, "x", 1, 8 }, { TokenType::EQUAL, "=", 1, 10 }, { TokenType::INTEGER_LITERAL, "1", 1, 12 } };
-    vector<Token> conditionInner = { { TokenType::IDENTIFIER, "y", 2, 12 }, { TokenType::NON_EQUAL, "<>", 2, 14 }, { TokenType::INTEGER_LITERAL, "2", 2, 17 } };
-    list<Node*> thenBlockInner = { new AssignmentStatementNode("value", { { TokenType::IDENTIFIER, "true", 3, 17 } }) };
-    list<Node*> elseBlockInner = { new AssignmentStatementNode("value", { { TokenType::IDENTIFIER, "false", 5, 17 } }) };
-    list<Node*> thenBlockOuter = { new IfStatementNode(conditionInner, thenBlockInner, elseBlockInner) };
-    list<Node*> elseBlockOuter = { new AssignmentStatementNode("error", { { TokenType::MINUS, "-", 7, 17 }, { TokenType::INTEGER_LITERAL, "1", 7, 18 } }) };
+    vector<Token> conditionOuter = { { TokenType::IDENTIFIER, "x", 3, 29 }, 
+                                        { TokenType::EQUAL, "=", 3, 31 }, 
+                                        { TokenType::INTEGER_LITERAL, "1", 3, 33 } };
+    vector<Token> conditionInner = { { TokenType::IDENTIFIER, "y", 4, 38 }, 
+                                        { TokenType::NON_EQUAL, "<>", 4, 40 }, 
+                                        { TokenType::INTEGER_LITERAL, "2", 4, 43 } };
+    list<shared_ptr<Node>> thenBlockInner = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::IDENTIFIER, "true", 5, 49 } }) };
+    list<shared_ptr<Node>> elseBlockInner = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::IDENTIFIER, "false", 7, 49 } }) };
+    list<shared_ptr<Node>> thenBlockOuter = { make_shared<IfStatementNode>(conditionInner, thenBlockInner, elseBlockInner) };
+    list<shared_ptr<Node>> elseBlockOuter = { make_shared<AssignmentStatementNode>("error", initializer_list<Token>{ { TokenType::MINUS, "-", 9, 49 }, { TokenType::INTEGER_LITERAL, "1", 9, 50 } }) };
 
-    list<list<Node*>> expectedAst = {
-        { new ProgramNode("NestedIfWithElse") },
-        { new BeginSectionNode(), new IfStatementNode(conditionOuter, thenBlockOuter, elseBlockOuter) }
+    list<list<shared_ptr<Node>>> expectedAst = {
+        { make_shared<ProgramNode>("NestedIfWithElse") },
+        { make_shared<BeginSectionNode>(), make_shared<IfStatementNode>(conditionOuter, thenBlockOuter, elseBlockOuter) }
     };
 
     EXPECT_TRUE(CompareAST(ast, expectedAst));
-
-    for (const auto& block : ast) for (Node* node : block) delete node;
-    for (const auto& block : expectedAst) for (Node* node : block) delete node;
-    for (Node* node : thenBlockInner) delete node;
-    for (Node* node : elseBlockInner) delete node;
-    for (Node* node : thenBlockOuter) delete node;
-    for (Node* node : elseBlockOuter) delete node;
 }
 
 TEST(ParserTest, handles_syntax_error_missing_semicolon_between_statements) {
     EXPECT_THROW({
-        Parser parser(tokenize(R"(program MissingSemicolon; 
-                                  begin 
-                                    a := 1 
-                                    b := 2; 
+        Parser parser(tokenize(R"(program MissingSemicolon;
+                                  begin
+                                    a := 1
+                                    b := 2;
                                   end.)"));
         parser.parse();
         }, runtime_error);
 }
-

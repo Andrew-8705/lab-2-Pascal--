@@ -158,14 +158,14 @@ int main()
                                             x : integer;
                                         begin
                                             x := 5;
-                                            if (x 0) then
-                                                Write("Error");
+                                            if (x <> 0) then
+                                                Write("Error: ", 1 + 3 * 4);
                                         end.)";
-		Lexer lexer(sample);
+		Lexer lexer(problem);
 		const vector<Token> tokens = lexer.tokenize();
 		for (auto& x : tokens) cout << x.value << '\n';
 		Parser parser(tokens);
-		list<list<Node*>>& ast = parser.parse();
+		auto& ast = parser.parse();
 		Interpreter inter(ast);
 		inter.run();
 	}

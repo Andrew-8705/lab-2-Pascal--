@@ -9,6 +9,7 @@
 #include "../ExpressionEvaluator/Evaluator.h"
 #include <iomanip>
 #include <sstream>
+#include <memory>
 
 using namespace std;
 
@@ -31,20 +32,21 @@ const string num_to_str(const double num)
 
 class Interpreter {
 private:
-	list<list<Node*>> ast;
+	list<list<shared_ptr<Node>>> ast;
 	unordered_map<string, variant<int, double, string>> variables;
 	unordered_map<string, variant<int, double, string>> constants;
 
-	void executeBlock(const list<Node*>& block) {
-		for (Node* node : block)
+	void executeBlock(const list<shared_ptr<Node>>& block) {
+		for (const auto& node : block)
 			executeStatement(node);
 	}
 
-	void executeStatement(Node* node) {
+	void executeStatement(shared_ptr<Node> node) {
 		switch (node->type) {
 			case Node::NodeType::CONST_DECLARATION: 
 			{
-				const ConstDeclarationNode* constNode = static_cast<const ConstDeclarationNode*>(node);
+				const auto constNode = dynamic_pointer_cast<const ConstDeclarationNode>(node);
+				if (!constNode) throw runtime_error("Internal Error: Could not cast node to ConstDeclarationNode.");
 				if (constants.count(constNode->identifier))
 					throw runtime_error("Constant already declared: " + constNode->identifier);
 				constants[constNode->identifier] = constNode->value;
@@ -53,8 +55,11 @@ private:
 			
 			case Node::NodeType::VARIABLE_DECLARATION: 
 			{
-				const VariableDeclarationNode* varNode = static_cast<const VariableDeclarationNode*>(node);
-				const IdentifierListNode* identListNode = static_cast<const IdentifierListNode*>(varNode->identifierList);
+				const auto varNode = dynamic_pointer_cast<const VariableDeclarationNode>(node);
+				if (!varNode) throw runtime_error("Internal Error: Could not cast node to VariableDeclarationNode.");
+				const auto identListNode = dynamic_pointer_cast<const IdentifierListNode>(varNode->identifierList);
+				if (!identListNode) throw runtime_error("Internal Error: Could not cast node to IdentifierListNode.");
+
 				for (const string& identifier : identListNode->identifiers) {
 					if (constants.count(identifier)) {
 						throw runtime_error("Redeclared constant name: " + identifier);
@@ -72,7 +77,8 @@ private:
 
 			case Node::NodeType::ASSIGNMENT_STATEMENT:
 			{
-				const AssignmentStatementNode* assignNode = static_cast<const AssignmentStatementNode*>(node);
+				const auto assignNode = dynamic_pointer_cast<const AssignmentStatementNode>(node);
+				if (!assignNode) throw runtime_error("Internal Error: Could not cast node to AssignmentStatementNode.");
 				string varName = assignNode->variableName;
 
 				if (constants.count(varName))
@@ -85,7 +91,8 @@ private:
 				}
 
 				switch (variables[varName].index()){
-					case 0: case 1:
+					case 0: // int 
+					case 1: // double
 					{
 						try{
 							double assign = Evaluator::evaluate_numeric(assignNode->expression, variables, constants);
@@ -99,7 +106,7 @@ private:
 						}
 						break;
 					}
-					case 2:
+					case 2: // string
 					{
 						try {
 							variables[varName] = Evaluator::evaluate_string(assignNode->expression, variables, constants);
@@ -115,12 +122,13 @@ private:
 
 			case Node::NodeType::WRITE_STATEMENT:
 			{
-				const WriteStatementNode* writeNode = static_cast<const WriteStatementNode*>(node);
+				const auto writeNode = dynamic_pointer_cast<const WriteStatementNode>(node);
+				if (!writeNode) throw runtime_error("Internal Error: Could not cast node to WriteStatementNode.");
 				string record = "";
 				bool last_comma = false;
 				bool is_first_token = true;
 				vector<Token> expression;
-				for (auto& token : writeNode->expression)
+				for (const auto& token : writeNode->expression)
 				{
 					switch (token.type)
 					{
@@ -202,8 +210,8 @@ private:
 
 			case Node::NodeType::READ_STATEMENT:
 			{
-				const ReadStatementNode* readNode = static_cast<const ReadStatementNode*>(node);
-				const IdentifierListNode* readList = static_cast<const IdentifierListNode*>(readNode->identifierList);
+				const auto readNode = dynamic_pointer_cast<const ReadStatementNode>(node);
+				const auto readList = dynamic_pointer_cast<const IdentifierListNode>(readNode->identifierList);
 				for (auto& listItem : readList->identifiers)
 				{
 					if (constants.find(listItem) != constants.end())
@@ -244,12 +252,12 @@ private:
 
 			case Node::NodeType::IF_STATEMENT:
 			{
-				const IfStatementNode* ifNode = static_cast<const IfStatementNode*>(node);
+				const auto ifNode = dynamic_pointer_cast<const IfStatementNode>(node);
 				Token sign;
 				vector<Token> left_expression;
 				vector<Token> right_expression;
 				bool after_sign = false;
-				for (auto& token : ifNode->condition) // разбор
+				for (const auto& token : ifNode->condition) // разбор
 				{
 					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER 
 						|| token.type == TokenType::LESS || token.type == TokenType::GREATER_OR_EQUAL || token.type == TokenType::LESS_OR_EQUAL)
@@ -353,7 +361,7 @@ private:
 	}
 
 public:
-	Interpreter(const list<list<Node*>>& parsedAst) : ast(parsedAst) {}
+	Interpreter(const list<list<shared_ptr<Node>>>& parsedAst) : ast(parsedAst) {}
 
 	void run() {
 		if (!ast.empty()) {

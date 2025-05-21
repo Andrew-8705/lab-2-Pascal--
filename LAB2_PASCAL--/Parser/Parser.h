@@ -9,15 +9,16 @@
 #include "../Base/Node.h"
 #include <list>
 #include <set>
+#include <memory>
 
 using namespace std;
 
 class Parser {
 private:
     vector<Token> tokens;
-    list<list<Node*>> ast;
+    list<list<shared_ptr<Node>>> ast;
     int curTokenPos = 0;
-    list<Node*>* currentBlock = nullptr;
+    list<shared_ptr<Node>>* currentBlock = nullptr;
 
     Token peek() const {
         if (curTokenPos < tokens.size()) {
@@ -61,7 +62,7 @@ private:
         throw runtime_error("Expected: " + errorMessage);
     }
 
-    void addNode(Node* node) {
+    void addNode(shared_ptr<Node> node) {
         if (currentBlock) {
             currentBlock->push_back(node);
         }
@@ -79,23 +80,23 @@ private:
     void parseProgram() {
         require({ TokenType::KEYWORD_PROGRAM }, "'program'");
         Token programName = require({ TokenType::IDENTIFIER }, "'program name'");
-        addNode(new ProgramNode(programName.value));
+        addNode(make_shared<ProgramNode>(programName.value));
         require({ TokenType::SEMICOLON }, "';'");
 
         if (peek().type == TokenType::KEYWORD_CONST) {
             startNewBlock();
-            addNode(new ConstSectionNode());
+            addNode(make_shared<ConstSectionNode>());
             parseConstDeclarations();
         }
 
         if (peek().type == TokenType::KEYWORD_VAR) {
             startNewBlock();
-            addNode(new VarSectionNode());
+            addNode(make_shared<VarSectionNode>());
             parseVarDeclarations();
         }
 
         startNewBlock();
-        addNode(new BeginSectionNode());
+        addNode(make_shared<BeginSectionNode>());
         parseBeginStatement();
 
         require({ TokenType::END_OF_PROGRAM }, "'end.'");
@@ -114,7 +115,7 @@ private:
 
     void parseConstDeclaration() {
         Token identifier = require({ TokenType::IDENTIFIER }, "constant identifier");
-        ConstDeclarationNode* constDeclNode = new ConstDeclarationNode(identifier.value);
+        auto constDeclNode = make_shared<ConstDeclarationNode>(identifier.value);
         require({ TokenType::COLON }, "':'");
         constDeclNode->type = parseTypeSpecifier();
         require({ TokenType::EQUAL }, "'='");
@@ -135,7 +136,7 @@ private:
     }
 
     void parseVarDeclaration() {
-        VariableDeclarationNode* varDeclNode = new VariableDeclarationNode();
+        auto varDeclNode = make_shared<VariableDeclarationNode>();
         varDeclNode->identifierList = parseIdentifierList();
         require({ TokenType::COLON }, "':'");
         varDeclNode->type = parseTypeSpecifier();
@@ -143,8 +144,8 @@ private:
         require({ TokenType::SEMICOLON }, "';'");
     }
 
-    IdentifierListNode* parseIdentifierList() {
-        IdentifierListNode* idListNode = new IdentifierListNode();
+    shared_ptr<IdentifierListNode> parseIdentifierList() {
+        auto idListNode = make_shared<IdentifierListNode>();
         Token identifier = require({ TokenType::IDENTIFIER }, "identifier");
         idListNode->identifiers.push_back(identifier.value);
         while (match({ TokenType::COMMA })) {
@@ -218,7 +219,7 @@ private:
         };
 
         Token identifier = require({ TokenType::IDENTIFIER }, "variable identifier");
-        AssignmentStatementNode* assignNode = new AssignmentStatementNode(identifier.value);
+        auto assignNode = make_shared<AssignmentStatementNode>(identifier.value);
         require({ TokenType::ASSIGN }, "':='");
         while (peek().type != TokenType::SEMICOLON) {
             if (unexpectedTokens.count(peek().type)) {
@@ -251,7 +252,7 @@ private:
         };
 
         require({ TokenType::KEYWORD_WRITE }, "'Write'");
-        WriteStatementNode* writeNode = new WriteStatementNode();
+        auto writeNode = make_shared<WriteStatementNode>();
         require({ TokenType::LEFT_PAREN }, "'('");
         while (getNextTokenType() != TokenType::RIGHT_PAREN) {
             if (unexpectedTokensInWrite.count(peek().type)) 
@@ -267,7 +268,7 @@ private:
 
     void parseReadStatement() {
         require({ TokenType::KEYWORD_READ }, "'Read'");
-        ReadStatementNode* readNode = new ReadStatementNode();
+        auto readNode = make_shared<ReadStatementNode>();
         require({ TokenType::LEFT_PAREN }, "'('");
         readNode->identifierList = parseIdentifierList();
         require({ TokenType::RIGHT_PAREN }, "')'");
@@ -277,7 +278,7 @@ private:
 
     void parseIfStatement() {
         require({ TokenType::KEYWORD_IF }, "'if'");
-        IfStatementNode* ifNode = new IfStatementNode();
+        auto ifNode = make_shared<IfStatementNode>();
         require({ TokenType::LEFT_PAREN }, "'('");
 
         static const set<TokenType> unexpectedTokensCondition = {
@@ -310,13 +311,13 @@ private:
         currentBlock->push_back(ifNode);
     }
 
-    list<Node*> parseStatementBlock() {
-        list<Node*> block;
-        list<Node*>* previousBlock = currentBlock;
+    list<shared_ptr<Node>> parseStatementBlock() {
+        list<shared_ptr<Node>> block;
+        list<shared_ptr<Node>>* previousBlock = currentBlock;
         currentBlock = &block;
         if (peek().type == TokenType::KEYWORD_BEGIN) {
             require({ TokenType::KEYWORD_BEGIN }, "'begin'");
-            BeginSectionNode* beginNode = new BeginSectionNode();
+            auto beginNode = make_shared<BeginSectionNode>();
             block.push_back(beginNode);
             while (peek().type != TokenType::KEYWORD_END) {
                 parseStatement();
@@ -336,7 +337,7 @@ private:
 public:
     Parser(const vector<Token>& tkns) : tokens(tkns) {};
 
-    list<list<Node*>>& parse() {
+    list<list<shared_ptr<Node>>>& parse() {
         parseProgram();
         return ast;
     }
