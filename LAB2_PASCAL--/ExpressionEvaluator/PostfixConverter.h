@@ -18,13 +18,13 @@ public:
         bool expectOper = true;
 
         for (const Token& item : expr) {
-            if (item.type == TokenType::LEFT_PAREN) {
+            if (item.type == TokenTypes::LEFT_PAREN) {
                 st.push(item); 
                 expectOper = true;
             }
-            else if (item.type == TokenType::RIGHT_PAREN) {
+            else if (item.type == TokenTypes::RIGHT_PAREN) {
                 stItem = st.top(); st.pop();
-                while (stItem.type != TokenType::LEFT_PAREN) {
+                while (stItem.type != TokenTypes::LEFT_PAREN) {
                     out.push_back(stItem);
                     stItem = st.top(); st.pop();
                 }
@@ -32,7 +32,7 @@ public:
             }
             else if (priority.count(item.value)) {
                 if (item.value == "-" && expectOper) {
-                    Token unaryMinusToken = { TokenType::MINUS, "_", item.line, item.column };
+                    Token unaryMinusToken = { TokenTypes::MINUS, "_", item.line, item.column };
                     st.push(unaryMinusToken);
                 }
                 else {

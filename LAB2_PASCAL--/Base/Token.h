@@ -6,7 +6,7 @@ using namespace std;
 
 
 
-enum class TokenType {
+enum class TokenTypes {
     IDENTIFIER,       // имена переменных
     INTEGER_LITERAL,  // переменная типа int
     DOUBLE_LITERAL,   // переменная типа double
@@ -47,9 +47,9 @@ enum class TokenType {
 };
 
 struct Token {
-    TokenType type;
+    TokenTypes type;
     string value;
     int line;
     int column;
-    Token(TokenType tt = TokenType::UNKNOWN, string val = "", int l = -1, int c = -1) : type(tt), value(val), line(l), column(c) {}
+    Token(TokenTypes tt = TokenTypes::UNKNOWN, string val = "", int l = -1, int c = -1) : type(tt), value(val), line(l), column(c) {}
 };

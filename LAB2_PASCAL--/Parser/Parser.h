@@ -24,14 +24,14 @@ private:
         if (curTokenPos < tokens.size()) {
             return tokens[curTokenPos];
         }
-        return Token(TokenType::UNKNOWN, "", -1, -1);
+        return Token(TokenTypes::UNKNOWN, "", -1, -1);
     }
 
-    TokenType getNextTokenType() const {
+    TokenTypes getNextTokenTypes() const {
         if (curTokenPos + 1 < tokens.size()) {
             return tokens[curTokenPos + 1].type;
         }
-        return TokenType::UNKNOWN;
+        return TokenTypes::UNKNOWN;
     }
 
     Token pass() {
@@ -42,10 +42,10 @@ private:
         return current;
     }
 
-    optional<Token> match(vector<TokenType> tts) {
+    optional<Token> match(vector<TokenTypes> tts) {
         if (curTokenPos < tokens.size()) {
             Token curToken = tokens[curTokenPos];
-            for (TokenType tt : tts) {
+            for (TokenTypes tt : tts) {
                 if (curToken.type == tt) {
                     curTokenPos++;
                     return curToken;
@@ -55,7 +55,7 @@ private:
         return nullopt;
     }
 
-    Token require(vector<TokenType> tts, const string& errorMessage) {
+    Token require(vector<TokenTypes> tts, const string& errorMessage) {
         optional<Token> tk = match(tts);
         if (tk.has_value())
             return tk.value();
@@ -78,18 +78,18 @@ private:
     }
 
     void parseProgram() {
-        require({ TokenType::KEYWORD_PROGRAM }, "'program'");
-        Token programName = require({ TokenType::IDENTIFIER }, "'program name'");
+        require({ TokenTypes::KEYWORD_PROGRAM }, "'program'");
+        Token programName = require({ TokenTypes::IDENTIFIER }, "'program name'");
         addNode(make_shared<ProgramNode>(programName.value));
-        require({ TokenType::SEMICOLON }, "';'");
+        require({ TokenTypes::SEMICOLON }, "';'");
 
-        if (peek().type == TokenType::KEYWORD_CONST) {
+        if (peek().type == TokenTypes::KEYWORD_CONST) {
             startNewBlock();
             addNode(make_shared<ConstSectionNode>());
             parseConstDeclarations();
         }
 
-        if (peek().type == TokenType::KEYWORD_VAR) {
+        if (peek().type == TokenTypes::KEYWORD_VAR) {
             startNewBlock();
             addNode(make_shared<VarSectionNode>());
             parseVarDeclarations();
@@ -99,38 +99,38 @@ private:
         addNode(make_shared<BeginSectionNode>());
         parseBeginStatement();
 
-        require({ TokenType::END_OF_PROGRAM }, "'end.'");
+        require({ TokenTypes::END_OF_PROGRAM }, "'end.'");
     }
 
     void parseConstDeclarations() {
-        require({ TokenType::KEYWORD_CONST }, "'const'");
-        while (peek().type == TokenType::IDENTIFIER) {
+        require({ TokenTypes::KEYWORD_CONST }, "'const'");
+        while (peek().type == TokenTypes::IDENTIFIER) {
             parseConstDeclaration();
         }
 
-        if (peek().type != TokenType::KEYWORD_VAR && peek().type != TokenType::KEYWORD_BEGIN) {
+        if (peek().type != TokenTypes::KEYWORD_VAR && peek().type != TokenTypes::KEYWORD_BEGIN) {
             throw runtime_error("Syntax Error: Expected 'var' or 'begin' after constant declarations, but got " + peek().value);
         }
     }
 
     void parseConstDeclaration() {
-        Token identifier = require({ TokenType::IDENTIFIER }, "constant identifier");
+        Token identifier = require({ TokenTypes::IDENTIFIER }, "constant identifier");
         auto constDeclNode = make_shared<ConstDeclarationNode>(identifier.value);
-        require({ TokenType::COLON }, "':'");
+        require({ TokenTypes::COLON }, "':'");
         constDeclNode->type = parseTypeSpecifier();
-        require({ TokenType::EQUAL }, "'='");
+        require({ TokenTypes::EQUAL }, "'='");
         constDeclNode->value = parseLiteral();
         currentBlock->push_back(constDeclNode);
-        require({ TokenType::SEMICOLON }, "';'");
+        require({ TokenTypes::SEMICOLON }, "';'");
     }
 
     void parseVarDeclarations() {
-        require({ TokenType::KEYWORD_VAR }, "'var'");
-        while (peek().type == TokenType::IDENTIFIER) {
+        require({ TokenTypes::KEYWORD_VAR }, "'var'");
+        while (peek().type == TokenTypes::IDENTIFIER) {
             parseVarDeclaration();
         }
 
-        if (peek().type != TokenType::KEYWORD_BEGIN) {
+        if (peek().type != TokenTypes::KEYWORD_BEGIN) {
             throw runtime_error("Syntax Error: Expected 'begin' after variable declarations, but got " + peek().value);
         }
     }
@@ -138,40 +138,40 @@ private:
     void parseVarDeclaration() {
         auto varDeclNode = make_shared<VariableDeclarationNode>();
         varDeclNode->identifierList = parseIdentifierList();
-        require({ TokenType::COLON }, "':'");
+        require({ TokenTypes::COLON }, "':'");
         varDeclNode->type = parseTypeSpecifier();
         currentBlock->push_back(varDeclNode);
-        require({ TokenType::SEMICOLON }, "';'");
+        require({ TokenTypes::SEMICOLON }, "';'");
     }
 
     shared_ptr<IdentifierListNode> parseIdentifierList() {
         auto idListNode = make_shared<IdentifierListNode>();
-        Token identifier = require({ TokenType::IDENTIFIER }, "identifier");
+        Token identifier = require({ TokenTypes::IDENTIFIER }, "identifier");
         idListNode->identifiers.push_back(identifier.value);
-        while (match({ TokenType::COMMA })) {
-            identifier = require({ TokenType::IDENTIFIER }, "identifier");
+        while (match({ TokenTypes::COMMA })) {
+            identifier = require({ TokenTypes::IDENTIFIER }, "identifier");
             idListNode->identifiers.push_back(identifier.value);
         }
         return idListNode;
     }
     string parseTypeSpecifier() {
-        if (match({ TokenType::KEYWORD_INTEGER }))
+        if (match({ TokenTypes::KEYWORD_INTEGER }))
             return "integer";
-        else if (match({ TokenType::KEYWORD_DOUBLE }))
+        else if (match({ TokenTypes::KEYWORD_DOUBLE }))
             return "double";
-        else if (match({ TokenType::KEYWORD_STRING }))
+        else if (match({ TokenTypes::KEYWORD_STRING }))
             return "string";
         throw runtime_error("Syntax Error: Expected 'integer', 'double' or 'string' but got " + peek().value);
     }
 
     variant<int, double, string> parseLiteral() {
-        if (auto intToken = match({ TokenType::INTEGER_LITERAL })) {
+        if (auto intToken = match({ TokenTypes::INTEGER_LITERAL })) {
             return stoi(intToken->value);
         }
-        else if (auto doubleToken = match({ TokenType::DOUBLE_LITERAL })) {
+        else if (auto doubleToken = match({ TokenTypes::DOUBLE_LITERAL })) {
             return stod(doubleToken->value);
         }
-        else if (auto stringToken = match({ TokenType::STRING_LITERAL })) {
+        else if (auto stringToken = match({ TokenTypes::STRING_LITERAL })) {
             string value = stringToken->value;
             return value;
         }
@@ -181,26 +181,26 @@ private:
     }
 
     void parseBeginStatement() {
-        require({ TokenType::KEYWORD_BEGIN }, "'begin'");
-        while (peek().type != TokenType::END_OF_PROGRAM && peek().type != TokenType::KEYWORD_END) {
+        require({ TokenTypes::KEYWORD_BEGIN }, "'begin'");
+        while (peek().type != TokenTypes::END_OF_PROGRAM && peek().type != TokenTypes::KEYWORD_END) {
             parseStatement();
         }
-        if (peek().type != TokenType::END_OF_PROGRAM) {
-            require({ TokenType::KEYWORD_END }, "'end'");
+        if (peek().type != TokenTypes::END_OF_PROGRAM) {
+            require({ TokenTypes::KEYWORD_END }, "'end'");
         }
     }
 
     void parseStatement() {
-        if (peek().type == TokenType::IDENTIFIER) {
+        if (peek().type == TokenTypes::IDENTIFIER) {
             parseAssignmentStatement();
         }
-        else if (peek().type == TokenType::KEYWORD_WRITE) {
+        else if (peek().type == TokenTypes::KEYWORD_WRITE) {
             parseWriteStatement();
         }
-        else if (peek().type == TokenType::KEYWORD_READ) {
+        else if (peek().type == TokenTypes::KEYWORD_READ) {
             parseReadStatement();
         }
-        else if (peek().type == TokenType::KEYWORD_IF) {
+        else if (peek().type == TokenTypes::KEYWORD_IF) {
             parseIfStatement();
         }
         else {
@@ -209,23 +209,23 @@ private:
     }
 
     void parseAssignmentStatement() {
-        static const set<TokenType> unexpectedTokens = {
-            TokenType::KEYWORD_BEGIN,
-            TokenType::KEYWORD_WRITE,
-            TokenType::KEYWORD_READ,
-            TokenType::KEYWORD_IF,
-            TokenType::KEYWORD_END,
-            TokenType::END_OF_PROGRAM
+        static const set<TokenTypes> unexpectedTokens = {
+            TokenTypes::KEYWORD_BEGIN,
+            TokenTypes::KEYWORD_WRITE,
+            TokenTypes::KEYWORD_READ,
+            TokenTypes::KEYWORD_IF,
+            TokenTypes::KEYWORD_END,
+            TokenTypes::END_OF_PROGRAM
         };
 
-        Token identifier = require({ TokenType::IDENTIFIER }, "variable identifier");
+        Token identifier = require({ TokenTypes::IDENTIFIER }, "variable identifier");
         auto assignNode = make_shared<AssignmentStatementNode>(identifier.value);
-        require({ TokenType::ASSIGN }, "':='");
-        while (peek().type != TokenType::SEMICOLON) {
+        require({ TokenTypes::ASSIGN }, "':='");
+        while (peek().type != TokenTypes::SEMICOLON) {
             if (unexpectedTokens.count(peek().type)) {
                 throw runtime_error("Syntax Error: Expected ';' after assignment for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
             }
-            if (peek().type == TokenType::IDENTIFIER && getNextTokenType() == TokenType::ASSIGN) {
+            if (peek().type == TokenTypes::IDENTIFIER && getNextTokenTypes() == TokenTypes::ASSIGN) {
                 throw runtime_error("Syntax Error: Expected ';' after assignment for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
             }
             assignNode->expression.push_back(pass());
@@ -234,66 +234,66 @@ private:
             throw runtime_error("Syntax Error: Expected an expression after ':=' for variable '" + identifier.value + "' at line " + to_string(identifier.line) + ", column " + to_string(identifier.column));
         }
         currentBlock->push_back(assignNode);
-        require({ TokenType::SEMICOLON }, "';'");
+        require({ TokenTypes::SEMICOLON }, "';'");
     }
 
     void parseWriteStatement() {
-        static const set<TokenType> unexpectedTokensInWrite = {
-           TokenType::KEYWORD_THEN,
-           TokenType::KEYWORD_ELSE,
-           TokenType::KEYWORD_BEGIN,
-           TokenType::KEYWORD_WRITE,
-           TokenType::KEYWORD_READ,
-           TokenType::KEYWORD_IF,
-           TokenType::KEYWORD_END,
-           TokenType::END_OF_PROGRAM,
-           TokenType::SEMICOLON,
-           TokenType::ASSIGN
+        static const set<TokenTypes> unexpectedTokensInWrite = {
+           TokenTypes::KEYWORD_THEN,
+           TokenTypes::KEYWORD_ELSE,
+           TokenTypes::KEYWORD_BEGIN,
+           TokenTypes::KEYWORD_WRITE,
+           TokenTypes::KEYWORD_READ,
+           TokenTypes::KEYWORD_IF,
+           TokenTypes::KEYWORD_END,
+           TokenTypes::END_OF_PROGRAM,
+           TokenTypes::SEMICOLON,
+           TokenTypes::ASSIGN
         };
 
-        require({ TokenType::KEYWORD_WRITE }, "'Write'");
+        require({ TokenTypes::KEYWORD_WRITE }, "'Write'");
         auto writeNode = make_shared<WriteStatementNode>();
-        require({ TokenType::LEFT_PAREN }, "'('");
-        while (getNextTokenType() != TokenType::RIGHT_PAREN) {
+        require({ TokenTypes::LEFT_PAREN }, "'('");
+        while (getNextTokenTypes() != TokenTypes::RIGHT_PAREN) {
             if (unexpectedTokensInWrite.count(peek().type)) 
                 throw runtime_error("Syntax Error in Write statement: Unexpected token '" + peek().value + "' within the argument list at line " 
                     + to_string(peek().line) + ", column " + to_string(peek().column) + ". Expected an expression or ')'.");
             writeNode->expression.push_back(pass());
         }
         writeNode->expression.push_back(pass());
-        require({ TokenType::RIGHT_PAREN }, "')'");
-        require({ TokenType::SEMICOLON }, "';'");
+        require({ TokenTypes::RIGHT_PAREN }, "')'");
+        require({ TokenTypes::SEMICOLON }, "';'");
         currentBlock->push_back(writeNode);
     }
 
     void parseReadStatement() {
-        require({ TokenType::KEYWORD_READ }, "'Read'");
+        require({ TokenTypes::KEYWORD_READ }, "'Read'");
         auto readNode = make_shared<ReadStatementNode>();
-        require({ TokenType::LEFT_PAREN }, "'('");
+        require({ TokenTypes::LEFT_PAREN }, "'('");
         readNode->identifierList = parseIdentifierList();
-        require({ TokenType::RIGHT_PAREN }, "')'");
-        require({ TokenType::SEMICOLON }, "';'");
+        require({ TokenTypes::RIGHT_PAREN }, "')'");
+        require({ TokenTypes::SEMICOLON }, "';'");
         currentBlock->push_back(readNode);
     }
 
     void parseIfStatement() {
-        require({ TokenType::KEYWORD_IF }, "'if'");
+        require({ TokenTypes::KEYWORD_IF }, "'if'");
         auto ifNode = make_shared<IfStatementNode>();
-        require({ TokenType::LEFT_PAREN }, "'('");
+        require({ TokenTypes::LEFT_PAREN }, "'('");
 
-        static const set<TokenType> unexpectedTokensCondition = {
-            TokenType::KEYWORD_THEN,
-            TokenType::KEYWORD_ELSE,
-            TokenType::KEYWORD_BEGIN,
-            TokenType::KEYWORD_WRITE,
-            TokenType::KEYWORD_READ,
-            TokenType::KEYWORD_IF,
-            TokenType::KEYWORD_END,
-            TokenType::END_OF_PROGRAM,
-            TokenType::SEMICOLON // преждевременная точка с запятой
+        static const set<TokenTypes> unexpectedTokensCondition = {
+            TokenTypes::KEYWORD_THEN,
+            TokenTypes::KEYWORD_ELSE,
+            TokenTypes::KEYWORD_BEGIN,
+            TokenTypes::KEYWORD_WRITE,
+            TokenTypes::KEYWORD_READ,
+            TokenTypes::KEYWORD_IF,
+            TokenTypes::KEYWORD_END,
+            TokenTypes::END_OF_PROGRAM,
+            TokenTypes::SEMICOLON // преждевременная точка с запятой
         };
 
-        while (peek().type != TokenType::RIGHT_PAREN) {
+        while (peek().type != TokenTypes::RIGHT_PAREN) {
             if (unexpectedTokensCondition.count(peek().type)) {
                 throw runtime_error("Syntax Error: Expected ')' after 'if' condition at line " + to_string(peek().line) + ", column " + to_string(peek().column));
             }
@@ -302,10 +302,10 @@ private:
                 throw runtime_error("Syntax Error: Unexpected end of input while parsing 'if' condition.");
             }
         }
-        require({ TokenType::RIGHT_PAREN }, "')'");
-        require({ TokenType::KEYWORD_THEN }, "'then'");
+        require({ TokenTypes::RIGHT_PAREN }, "')'");
+        require({ TokenTypes::KEYWORD_THEN }, "'then'");
         ifNode->thenStatement = parseStatementBlock();
-        if (match({ TokenType::KEYWORD_ELSE })) {
+        if (match({ TokenTypes::KEYWORD_ELSE })) {
             ifNode->elseStatement = parseStatementBlock();
         }
         currentBlock->push_back(ifNode);
@@ -315,17 +315,17 @@ private:
         list<shared_ptr<Node>> block;
         list<shared_ptr<Node>>* previousBlock = currentBlock;
         currentBlock = &block;
-        if (peek().type == TokenType::KEYWORD_BEGIN) {
-            require({ TokenType::KEYWORD_BEGIN }, "'begin'");
+        if (peek().type == TokenTypes::KEYWORD_BEGIN) {
+            require({ TokenTypes::KEYWORD_BEGIN }, "'begin'");
             auto beginNode = make_shared<BeginSectionNode>();
             block.push_back(beginNode);
-            while (peek().type != TokenType::KEYWORD_END) {
+            while (peek().type != TokenTypes::KEYWORD_END) {
                 parseStatement();
-                if (peek().type == TokenType::SEMICOLON) {
+                if (peek().type == TokenTypes::SEMICOLON) {
                     pass();
                 }
             }
-            require({ TokenType::KEYWORD_END }, "'end'");
+            require({ TokenTypes::KEYWORD_END }, "'end'");
         }
         else {
             parseStatement();

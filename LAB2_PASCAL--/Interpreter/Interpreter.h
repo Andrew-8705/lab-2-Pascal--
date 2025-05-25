@@ -10,7 +10,6 @@
 #include <iomanip>
 #include <sstream>
 #include <memory>
-
 using namespace std;
 
 const int pascal_precision = 14;
@@ -132,7 +131,12 @@ private:
 				{
 					switch (token.type)
 					{
-						case TokenType::COMMA:
+						case 
+						
+						
+						
+						
+						TokenTypes::COMMA:
 						{
 							if (is_first_token)
 								throw runtime_error("Syntax Error in Write statement: The argument list cannot start with a comma");
@@ -161,16 +165,16 @@ private:
 							is_first_token = false;
 							break;
 						}
-						case TokenType::IDENTIFIER: 
-						case TokenType::INTEGER_LITERAL: 
-						case TokenType::DOUBLE_LITERAL: 
-						case TokenType::PLUS: 
-						case TokenType::MINUS: 
-						case TokenType::MULTIPLY: 
-						case TokenType::DIVIDE:
-						case TokenType::KEYWORD_DIV:
-						case TokenType::KEYWORD_MOD:
-						case TokenType::STRING_LITERAL:
+						case TokenTypes::IDENTIFIER: 
+						case TokenTypes::INTEGER_LITERAL: 
+						case TokenTypes::DOUBLE_LITERAL: 
+						case TokenTypes::PLUS: 
+						case TokenTypes::MINUS: 
+						case TokenTypes::MULTIPLY: 
+						case TokenTypes::DIVIDE:
+						case TokenTypes::KEYWORD_DIV:
+						case TokenTypes::KEYWORD_MOD:
+						case TokenTypes::STRING_LITERAL:
 						{
 							expression.push_back(token);
 							last_comma = false;
@@ -259,8 +263,8 @@ private:
 				bool after_sign = false;
 				for (const auto& token : ifNode->condition) // разбор
 				{
-					if (token.type == TokenType::EQUAL || token.type == TokenType::NON_EQUAL || token.type == TokenType::GREATER 
-						|| token.type == TokenType::LESS || token.type == TokenType::GREATER_OR_EQUAL || token.type == TokenType::LESS_OR_EQUAL)
+					if (token.type == TokenTypes::EQUAL || token.type == TokenTypes::NON_EQUAL || token.type == TokenTypes::GREATER 
+						|| token.type == TokenTypes::LESS || token.type == TokenTypes::GREATER_OR_EQUAL || token.type == TokenTypes::LESS_OR_EQUAL)
 					{
 						if (after_sign) // два знака
 							throw runtime_error("Syntax Error in conditional expression: Multiple comparison operators ('=', '<>', '<', '<=', '>', '>=') found");
@@ -300,40 +304,40 @@ private:
 					{
 						switch (sign.type)
 						{
-							case TokenType::GREATER:
+							case TokenTypes::GREATER:
 							{
 								if constexpr (is_same_v<LeftType, string>)
 									throw runtime_error("Cannot compare strings using >");
 								return left > right;
 								break;
 							}
-							case TokenType::GREATER_OR_EQUAL:
+							case TokenTypes::GREATER_OR_EQUAL:
 							{
 								if constexpr (is_same_v<LeftType, string>)
 									throw runtime_error("Cannot compare strings using >=");
 								return left >= right;
 								break;
 							}
-							case TokenType::LESS:
+							case TokenTypes::LESS:
 							{
 								if constexpr (is_same_v<LeftType, string>)
 									throw runtime_error("Cannot compare strings using <");
 								return left < right;
 								break;
 							}
-							case TokenType::LESS_OR_EQUAL:
+							case TokenTypes::LESS_OR_EQUAL:
 							{
 								if constexpr (is_same_v<LeftType, string>)
 									throw runtime_error("Cannot compare strings using <=");
 								return left <= right;
 								break;
 							}
-							case TokenType::EQUAL:
+							case TokenTypes::EQUAL:
 							{
 								return left == right;
 								break;
 							}
-							case TokenType::NON_EQUAL:
+							case TokenTypes::NON_EQUAL:
 							{
 								return left != right;
 								break;
@@ -351,7 +355,7 @@ private:
 					}
 				}, leftExRes, rightExRes);
 
-				if (sign.type == TokenType::UNKNOWN)
+				if (sign.type == TokenTypes::UNKNOWN)
 					throw runtime_error("Expected comparison operator");
 
 				compare ? executeBlock(ifNode->thenStatement) : executeBlock(ifNode->elseStatement);

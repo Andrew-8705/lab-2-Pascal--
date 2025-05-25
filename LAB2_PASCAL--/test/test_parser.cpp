@@ -203,7 +203,7 @@ TEST(ParserTest, can_parse_assignment_statement) {
                                     counter := 10;
                                   end.)"));
     auto ast = parser.parse();
-    vector<Token> expression = { { TokenType::INTEGER_LITERAL, "10", 3, 31 } };
+    vector<Token> expression = { { TokenTypes::INTEGER_LITERAL, "10", 3, 31 } };
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("AssignStmt") },
         { make_shared<BeginSectionNode>(), make_shared<AssignmentStatementNode>("counter", expression) }
@@ -217,7 +217,7 @@ TEST(ParserTest, can_parse_write_statement_single_literal) {
                                    Write("Hello");
                                  end.)"));
     auto ast = parser.parse();
-    vector<Token> expression = { { TokenType::STRING_LITERAL, "Hello", 3, 26 } };
+    vector<Token> expression = { { TokenTypes::STRING_LITERAL, "Hello", 3, 26 } };
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("WriteLit") },
         { make_shared<BeginSectionNode>(), make_shared<WriteStatementNode>(expression) }
@@ -249,8 +249,8 @@ TEST(ParserTest, can_parse_if_statement_without_else) {
                                         result := 1;
                                   end.)"));
     auto ast = parser.parse();
-    vector<Token> condition = { { TokenType::IDENTIFIER, "flag", 3, 30 } };
-    list<shared_ptr<Node>> thenBlock = { make_shared<AssignmentStatementNode>("result", initializer_list<Token>{ { TokenType::INTEGER_LITERAL, "1", 4, 38 } }) };
+    vector<Token> condition = { { TokenTypes::IDENTIFIER, "flag", 3, 30 } };
+    list<shared_ptr<Node>> thenBlock = { make_shared<AssignmentStatementNode>("result", initializer_list<Token>{ { TokenTypes::INTEGER_LITERAL, "1", 4, 38 } }) };
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("IfNoElse") },
         { make_shared<BeginSectionNode>(), make_shared<IfStatementNode>(condition, thenBlock, nullopt) }
@@ -267,9 +267,9 @@ TEST(ParserTest, can_parse_if_statement_with_else) {
                                         value := -1;
                                   end.)"));
     auto ast = parser.parse();
-    vector<Token> condition = { { TokenType::IDENTIFIER, "count", 3, 29 }, { TokenType::GREATER, ">", 3, 35 }, { TokenType::INTEGER_LITERAL, "0", 3, 37 } };
-    list<shared_ptr<Node>> thenBlock = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::INTEGER_LITERAL, "1", 4, 39 } }) };
-    list<shared_ptr<Node>> elseBlock = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::MINUS, "-", 6, 39 }, { TokenType::INTEGER_LITERAL, "1", 6, 40 } }) };
+    vector<Token> condition = { { TokenTypes::IDENTIFIER, "count", 3, 29 }, { TokenTypes::GREATER, ">", 3, 35 }, { TokenTypes::INTEGER_LITERAL, "0", 3, 37 } };
+    list<shared_ptr<Node>> thenBlock = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenTypes::INTEGER_LITERAL, "1", 4, 39 } }) };
+    list<shared_ptr<Node>> elseBlock = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenTypes::MINUS, "-", 6, 39 }, { TokenTypes::INTEGER_LITERAL, "1", 6, 40 } }) };
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("IfElse") },
         { make_shared<BeginSectionNode>(), make_shared<IfStatementNode>(condition, thenBlock, elseBlock) }
@@ -461,7 +461,7 @@ TEST(ParserTest, can_parse_assignment_with_identifier) {
     auto ast = parser.parse();
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("AssignId") },
-        { make_shared<BeginSectionNode>(), make_shared<AssignmentStatementNode>("a", initializer_list<Token>{ { TokenType::IDENTIFIER, "b", 3, 31 } }) }
+        { make_shared<BeginSectionNode>(), make_shared<AssignmentStatementNode>("a", initializer_list<Token>{ { TokenTypes::IDENTIFIER, "b", 3, 31 } }) }
     };
     EXPECT_TRUE(CompareAST(ast, expectedAst));
 }
@@ -473,15 +473,15 @@ TEST(ParserTest, can_parse_write_statement_multiple_args_with_commas) {
                                   end.)"));
     auto ast = parser.parse();
     vector<Token> expr = {
-        { TokenType::STRING_LITERAL, "Hello", 3, 26 },
-        { TokenType::COMMA, ",", 3, 33 },
-        { TokenType::INTEGER_LITERAL, "10", 3, 35 },
-        { TokenType::COMMA, ",", 3, 37 },
-        { TokenType::DOUBLE_LITERAL, "10.10", 3, 39 },
-        { TokenType::COMMA, ",", 3, 45 },
-        { TokenType::IDENTIFIER, "var1", 3, 47 },
-        { TokenType::COMMA, ",", 3, 51 },
-        { TokenType::IDENTIFIER, "var2", 3, 53 }
+        { TokenTypes::STRING_LITERAL, "Hello", 3, 26 },
+        { TokenTypes::COMMA, ",", 3, 33 },
+        { TokenTypes::INTEGER_LITERAL, "10", 3, 35 },
+        { TokenTypes::COMMA, ",", 3, 37 },
+        { TokenTypes::DOUBLE_LITERAL, "10.10", 3, 39 },
+        { TokenTypes::COMMA, ",", 3, 45 },
+        { TokenTypes::IDENTIFIER, "var1", 3, 47 },
+        { TokenTypes::COMMA, ",", 3, 51 },
+        { TokenTypes::IDENTIFIER, "var2", 3, 53 }
     };
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("WriteMulti") },
@@ -523,13 +523,13 @@ TEST(ParserTest, can_parse_nested_if_without_else) {
                                   end.)"));
     auto ast = parser.parse();
 
-    vector<Token> condition1 = { { TokenType::IDENTIFIER, "a", 3, 30 }, 
-                                    { TokenType::GREATER, ">", 3, 32 }, 
-                                    { TokenType::INTEGER_LITERAL, "0", 3, 34 } };
-    vector<Token> condition2 = { { TokenType::IDENTIFIER, "b", 4, 38 }, 
-                                    { TokenType::LESS, "<", 4, 40 }, 
-                                    { TokenType::INTEGER_LITERAL, "10", 4, 42 } };
-    list<shared_ptr<Node>> thenBlockInner = { make_shared<AssignmentStatementNode>("result", initializer_list<Token>{ { TokenType::INTEGER_LITERAL, "5", 5, 49 } }) };
+    vector<Token> condition1 = { { TokenTypes::IDENTIFIER, "a", 3, 30 }, 
+                                    { TokenTypes::GREATER, ">", 3, 32 }, 
+                                    { TokenTypes::INTEGER_LITERAL, "0", 3, 34 } };
+    vector<Token> condition2 = { { TokenTypes::IDENTIFIER, "b", 4, 38 }, 
+                                    { TokenTypes::LESS, "<", 4, 40 }, 
+                                    { TokenTypes::INTEGER_LITERAL, "10", 4, 42 } };
+    list<shared_ptr<Node>> thenBlockInner = { make_shared<AssignmentStatementNode>("result", initializer_list<Token>{ { TokenTypes::INTEGER_LITERAL, "5", 5, 49 } }) };
     list<shared_ptr<Node>> thenBlockOuter = { make_shared<IfStatementNode>(condition2, thenBlockInner, nullopt) };
 
     list<list<shared_ptr<Node>>> expectedAst = {
@@ -553,16 +553,16 @@ TEST(ParserTest, can_parse_nested_if_with_else) {
                                   end.)"));
     auto ast = parser.parse();
 
-    vector<Token> conditionOuter = { { TokenType::IDENTIFIER, "x", 3, 29 }, 
-                                        { TokenType::EQUAL, "=", 3, 31 }, 
-                                        { TokenType::INTEGER_LITERAL, "1", 3, 33 } };
-    vector<Token> conditionInner = { { TokenType::IDENTIFIER, "y", 4, 38 }, 
-                                        { TokenType::NON_EQUAL, "<>", 4, 40 }, 
-                                        { TokenType::INTEGER_LITERAL, "2", 4, 43 } };
-    list<shared_ptr<Node>> thenBlockInner = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::IDENTIFIER, "true", 5, 49 } }) };
-    list<shared_ptr<Node>> elseBlockInner = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenType::IDENTIFIER, "false", 7, 49 } }) };
+    vector<Token> conditionOuter = { { TokenTypes::IDENTIFIER, "x", 3, 29 }, 
+                                        { TokenTypes::EQUAL, "=", 3, 31 }, 
+                                        { TokenTypes::INTEGER_LITERAL, "1", 3, 33 } };
+    vector<Token> conditionInner = { { TokenTypes::IDENTIFIER, "y", 4, 38 }, 
+                                        { TokenTypes::NON_EQUAL, "<>", 4, 40 }, 
+                                        { TokenTypes::INTEGER_LITERAL, "2", 4, 43 } };
+    list<shared_ptr<Node>> thenBlockInner = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenTypes::IDENTIFIER, "true", 5, 49 } }) };
+    list<shared_ptr<Node>> elseBlockInner = { make_shared<AssignmentStatementNode>("value", initializer_list<Token>{ { TokenTypes::IDENTIFIER, "false", 7, 49 } }) };
     list<shared_ptr<Node>> thenBlockOuter = { make_shared<IfStatementNode>(conditionInner, thenBlockInner, elseBlockInner) };
-    list<shared_ptr<Node>> elseBlockOuter = { make_shared<AssignmentStatementNode>("error", initializer_list<Token>{ { TokenType::MINUS, "-", 9, 49 }, { TokenType::INTEGER_LITERAL, "1", 9, 50 } }) };
+    list<shared_ptr<Node>> elseBlockOuter = { make_shared<AssignmentStatementNode>("error", initializer_list<Token>{ { TokenTypes::MINUS, "-", 9, 49 }, { TokenTypes::INTEGER_LITERAL, "1", 9, 50 } }) };
 
     list<list<shared_ptr<Node>>> expectedAst = {
         { make_shared<ProgramNode>("NestedIfWithElse") },

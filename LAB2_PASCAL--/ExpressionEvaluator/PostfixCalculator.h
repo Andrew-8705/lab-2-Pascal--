@@ -58,7 +58,7 @@ public:
                     }
                 }
             }
-            else if (tk.type == TokenType::IDENTIFIER) {
+            else if (tk.type == TokenTypes::IDENTIFIER) {
                 if (operands.count(lexem)) {
                     st.push(operands.at(lexem));
                 }
@@ -66,10 +66,10 @@ public:
                     throw runtime_error("Operand value not found for identifier: " + lexem);
                 }
             }
-            else if (tk.type == TokenType::INTEGER_LITERAL) {
+            else if (tk.type == TokenTypes::INTEGER_LITERAL) {
                 st.push(stod(lexem));
             }
-            else if (tk.type == TokenType::DOUBLE_LITERAL) {
+            else if (tk.type == TokenTypes::DOUBLE_LITERAL) {
                 st.push(stod(lexem));
             }
             else

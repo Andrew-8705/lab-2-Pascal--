@@ -22,7 +22,15 @@ public:
         postfix = PostfixConverter::Convert(infix);
         
         for (Token tk : infix)
-            if (tk.type == TokenType::IDENTIFIER)
+            if (tk.type == 
+                
+                
+                
+                
+                
+                
+                
+                TokenTypes::IDENTIFIER)
                 operands.push_back(tk.value);
     }
 

@@ -9,7 +9,6 @@
 #include <map>
 
 using namespace std;
-
 class Evaluator
 {
 public:
@@ -61,7 +60,12 @@ public:
 		{
 			switch (token.type)
 			{
-			case TokenType::STRING_LITERAL:
+			case 
+			
+			
+			
+			
+			TokenTypes::STRING_LITERAL:
 			{
 				if (!last_sign && !first_token) // два операнда подряд
 					throw runtime_error("Invalid string expression");
@@ -70,7 +74,7 @@ public:
 				last_sign = false;
 				break;
 			}
-			case TokenType::IDENTIFIER:
+			case TokenTypes::IDENTIFIER:
 			{
 				try {
 					if (!last_sign && !first_token) // два операнда подряд
@@ -98,7 +102,7 @@ public:
 				last_sign = false;
 				break;
 			}
-			case TokenType::PLUS:
+			case TokenTypes::PLUS:
 			{
 				if (first_token)
 					throw runtime_error("Invalid string expression: ");

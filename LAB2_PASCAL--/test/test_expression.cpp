@@ -5,9 +5,9 @@ TEST(ExpressionTest, can_create_expression)
 {
 	vector<Token> expression =
 	{
-		{TokenType::INTEGER_LITERAL,"7"},
-		{TokenType::PLUS, "+"},
-		{TokenType::INTEGER_LITERAL, "3"}
+		{TokenTypes::INTEGER_LITERAL,"7"},
+		{TokenTypes::PLUS, "+"},
+		{TokenTypes::INTEGER_LITERAL, "3"}
 	};
 	ASSERT_NO_THROW(Expression tmp(expression));
 }
@@ -16,9 +16,9 @@ TEST(ExpressionTest, can_perform_simple_expression)
 {
 	vector<Token> expression =
 	{
-		{TokenType::INTEGER_LITERAL,"7"},
-		{TokenType::PLUS, "+"},
-		{TokenType::INTEGER_LITERAL, "3"}
+		{TokenTypes::INTEGER_LITERAL,"7"},
+		{TokenTypes::PLUS, "+"},
+		{TokenTypes::INTEGER_LITERAL, "3"}
 	};
 	Expression tmp(expression);
 	map <string, double> values = {};
@@ -29,7 +29,7 @@ TEST(ExpressionTest, handle_expression_without_operators)
 {
 	vector<Token> expression =
 	{
-		{TokenType::INTEGER_LITERAL,"7"}
+		{TokenTypes::INTEGER_LITERAL,"7"}
 	};
 	Expression tmp(expression);
 	map <string, double> values = {};
@@ -57,9 +57,9 @@ TEST(ExpressionTest, can_perform_simple_expression_with_variables)
 {
 	vector<Token> expression =
 	{
-		{TokenType::IDENTIFIER,"a"},
-		{TokenType::PLUS, "+"},
-		{TokenType::IDENTIFIER, "b"}
+		{TokenTypes::IDENTIFIER,"a"},
+		{TokenTypes::PLUS, "+"},
+		{TokenTypes::IDENTIFIER, "b"}
 	};
 	Expression tmp(expression);
 	const map <string, double> values = 
@@ -74,9 +74,9 @@ TEST(ExpressionTest, subtraction)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "10"},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::INTEGER_LITERAL, "10"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -87,9 +87,9 @@ TEST(ExpressionTest, multiplication)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -100,9 +100,9 @@ TEST(ExpressionTest, division)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "20"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::INTEGER_LITERAL, "20"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -113,11 +113,11 @@ TEST(ExpressionTest, operator_precedence)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -128,13 +128,13 @@ TEST(ExpressionTest, parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -145,17 +145,17 @@ TEST(ExpressionTest, nested_parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "1"},
-        {TokenType::PLUS, "+"},
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "1"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -166,10 +166,10 @@ TEST(ExpressionTest, negative_numbers)
 {
     vector<Token> expression = 
     {
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -180,12 +180,12 @@ TEST(ExpressionTest, negative_numbers_with_parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -195,9 +195,9 @@ TEST(ExpressionTest, negative_numbers_with_parentheses)
 TEST(ExpressionTest, division_by_zero_throws) 
 {
     vector<Token> expression = {
-        {TokenType::INTEGER_LITERAL, "10"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "0"}
+        {TokenTypes::INTEGER_LITERAL, "10"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "0"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -208,8 +208,8 @@ TEST(ExpressionTest, invalid_expression_throws_in_constructor_unbalanced_parenth
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     ASSERT_THROW(Expression tmp(expression), runtime_error);
 }
@@ -218,9 +218,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point)
 {
     vector<Token> expression =
     {
-        {TokenType::INTEGER_LITERAL,"7.5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "2.5"}
+        {TokenTypes::INTEGER_LITERAL,"7.5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "2.5"}
     };
     Expression tmp(expression);
     map <string, double> values = {};
@@ -231,9 +231,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point_and_int)
 {
     vector<Token> expression =
     {
-        {TokenType::INTEGER_LITERAL,"7.5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "2"}
+        {TokenTypes::INTEGER_LITERAL,"7.5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "2"}
     };
     Expression tmp(expression);
     map <string, double> values = {};
@@ -243,9 +243,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point_minus)
 {
     vector<Token> expression =
     {
-        {TokenType::INTEGER_LITERAL,"7.5"},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "2.5"}
+        {TokenTypes::INTEGER_LITERAL,"7.5"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "2.5"}
     };
     Expression tmp(expression);
     map <string, double> values = {};
@@ -256,9 +256,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point_multiply)
 {
     vector<Token> expression =
     {
-        {TokenType::INTEGER_LITERAL,"7.5"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2.0"}
+        {TokenTypes::INTEGER_LITERAL,"7.5"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2.0"}
     };
     Expression tmp(expression);
     map <string, double> values = {};
@@ -268,9 +268,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point_division)
 {
     vector<Token> expression =
     {
-        {TokenType::INTEGER_LITERAL,"7.5"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "2.5"}
+        {TokenTypes::INTEGER_LITERAL,"7.5"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "2.5"}
     };
     Expression tmp(expression);
     map <string, double> values = {};
@@ -280,9 +280,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point_and_variables)
 {
     vector<Token> expression =
     {
-        {TokenType::IDENTIFIER,"a"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "b"}
+        {TokenTypes::IDENTIFIER,"a"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "b"}
     };
     Expression tmp(expression);
     const map <string, double> values =
@@ -295,9 +295,9 @@ TEST(ExpressionTest, can_perform_expression_with_floating_point_and_variables)
 TEST(ExpressionTest, missing_variable_throws) 
 {
     vector<Token> expression = {
-        {TokenType::IDENTIFIER, "a"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::IDENTIFIER, "a"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     Expression tmp(expression);
     map<string, double> values = {}; 
@@ -307,15 +307,15 @@ TEST(ExpressionTest, multiple_operations)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "10"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "1"}
+        {TokenTypes::INTEGER_LITERAL, "10"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "1"}
     };
     Expression tmp(expression);
     map<string, double> values = {};
@@ -325,12 +325,12 @@ TEST(ExpressionTest, unbalanced_parentheses_left)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::RIGHT_PAREN, ")"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::RIGHT_PAREN, ")"}
     };
 
     ASSERT_THROW(Expression tmp(expression), runtime_error);
@@ -340,10 +340,10 @@ TEST(ExpressionTest, unbalanced_parentheses_right)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::RIGHT_PAREN, ")"}
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::RIGHT_PAREN, ")"}
     };
 
     ASSERT_THROW(Expression tmp(expression), runtime_error);
@@ -353,9 +353,9 @@ TEST(ExpressionTest, variable_multiplication)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "a"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"}
+        {TokenTypes::IDENTIFIER, "a"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"}
     };
     Expression tmp(expression);
     const map<string, double> values = 
@@ -369,13 +369,13 @@ TEST(ExpressionTest, complex_expression_with_variables_and_parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::IDENTIFIER, "a"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "b"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::IDENTIFIER, "a"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "b"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"}
     };
     Expression tmp(expression);
     const map<string, double> values = 

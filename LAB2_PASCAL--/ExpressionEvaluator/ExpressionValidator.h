@@ -12,9 +12,10 @@ using namespace std;
 class ExpressionValidator {
     static void CheckValidCharacters(vector<Token>& expr) {
         for (Token tk : expr) {
-            if (tk.type != TokenType::INTEGER_LITERAL && tk.type != TokenType::DOUBLE_LITERAL && 
-                tk.type != TokenType::IDENTIFIER && !IsOperator(tk.value) && tk.type != TokenType::LEFT_PAREN &&
-                tk.type != TokenType::RIGHT_PAREN)
+            if (tk.type != 
+                TokenTypes::INTEGER_LITERAL && tk.type != TokenTypes::DOUBLE_LITERAL &&
+                tk.type != TokenTypes::IDENTIFIER && !IsOperator(tk.value) && tk.type != TokenTypes::LEFT_PAREN &&
+                tk.type != TokenTypes::RIGHT_PAREN)
                 throw runtime_error("Invalid character in expression");
         }
     }
@@ -22,10 +23,10 @@ class ExpressionValidator {
     static void CheckBrackets(vector<Token>& expr) {
         stack<Token> brStack;
         for (Token tk : expr) {
-            if (tk.type == TokenType::LEFT_PAREN) {
+            if (tk.type == TokenTypes::LEFT_PAREN) {
                 brStack.push(tk);
             }
-            else if (tk.type == TokenType::RIGHT_PAREN) {
+            else if (tk.type == TokenTypes::RIGHT_PAREN) {
                 if (brStack.empty()) {
                     throw runtime_error("Closing parenthesis is not matched");
                 }

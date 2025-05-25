@@ -7,9 +7,9 @@ TEST(NUMERIC_EvaluatorTest, can_evaluate_simple_expression)
 {
 	vector<Token> expression =
 	{
-		{TokenType::INTEGER_LITERAL,"7"},
-		{TokenType::PLUS, "+"},
-		{TokenType::INTEGER_LITERAL, "3"}
+		{TokenTypes::INTEGER_LITERAL,"7"},
+		{TokenTypes::PLUS, "+"},
+		{TokenTypes::INTEGER_LITERAL, "3"}
 	};
 	unordered_map<string, variant<int, double, string>> variables = {};
 	unordered_map<string, variant<int, double, string>> constants = {};
@@ -20,9 +20,9 @@ TEST(NUMERIC_EvaluatorTest, subtraction)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "10"},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::INTEGER_LITERAL, "10"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -33,9 +33,9 @@ TEST(NUMERIC_EvaluatorTest, multiplication)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -46,9 +46,9 @@ TEST(NUMERIC_EvaluatorTest, division)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "20"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::INTEGER_LITERAL, "20"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -59,11 +59,11 @@ TEST(NUMERIC_EvaluatorTest, operator_precedence)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -74,13 +74,13 @@ TEST(NUMERIC_EvaluatorTest, parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -91,17 +91,17 @@ TEST(NUMERIC_EvaluatorTest, nested_parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "1"},
-        {TokenType::PLUS, "+"},
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "4"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "1"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "4"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -112,10 +112,10 @@ TEST(NUMERIC_EvaluatorTest, negative_numbers)
 {
     vector<Token> expression = 
     {
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -126,12 +126,12 @@ TEST(NUMERIC_EvaluatorTest, negative_numbers_with_parentheses)
 {
     vector<Token> expression = 
     {
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"}
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -142,9 +142,9 @@ TEST(NUMERIC_EvaluatorTest, division_by_zero_throws)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "10"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "0"}
+        {TokenTypes::INTEGER_LITERAL, "10"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "0"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -155,7 +155,7 @@ TEST(NUMERIC_EvaluatorTest, simple_variable)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "x"}
+        {TokenTypes::IDENTIFIER, "x"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"x", 10} };
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -166,7 +166,7 @@ TEST(NUMERIC_EvaluatorTest, simple_constant)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "PI"}
+        {TokenTypes::IDENTIFIER, "PI"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = { {"PI", 3.14159} };
@@ -177,9 +177,9 @@ TEST(NUMERIC_EvaluatorTest, variable_plus_constant)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "x"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "PI"}
+        {TokenTypes::IDENTIFIER, "x"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "PI"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"x", 5} };
     unordered_map<string, variant<int, double, string>> constants = { {"PI", 3.14159} };
@@ -190,9 +190,9 @@ TEST(NUMERIC_EvaluatorTest, missing_variable_throws)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "x"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::IDENTIFIER, "x"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     unordered_map<string, variant<int, double, string>> variables = {}; 
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -203,9 +203,9 @@ TEST(NUMERIC_EvaluatorTest, missing_constant_throws)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "E"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"}
+        {TokenTypes::IDENTIFIER, "E"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"}
     };
     unordered_map<string, variant<int, double, string>> variables = {}; 
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -216,11 +216,11 @@ TEST(NUMERIC_EvaluatorTest, can_handle_exponentials)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"}
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -230,15 +230,15 @@ TEST(NUMERIC_EvaluatorTest, zero_division_complex)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::LEFT_PAREN, "("},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::RIGHT_PAREN, ")"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "0"}
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::LEFT_PAREN, "("},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::RIGHT_PAREN, ")"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "0"}
     };
 
     unordered_map<string, variant<int, double, string>> variables = {};
@@ -250,15 +250,15 @@ TEST(NUMERIC_EvaluatorTest, multiple_operations)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "10"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "5"},
-        {TokenType::MINUS, "-"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::MULTIPLY, "*"},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::DIVIDE, "/"},
-        {TokenType::INTEGER_LITERAL, "1"}
+        {TokenTypes::INTEGER_LITERAL, "10"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "5"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::MULTIPLY, "*"},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::DIVIDE, "/"},
+        {TokenTypes::INTEGER_LITERAL, "1"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -269,9 +269,9 @@ TEST(NUMERIC_EvaluatorTest, handles_floating_point)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "2.5"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3.5"}
+        {TokenTypes::INTEGER_LITERAL, "2.5"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3.5"}
     };
 
     unordered_map<string, variant<int, double, string>> variables = {};
@@ -282,15 +282,15 @@ TEST(NUMERIC_EvaluatorTest, long_chain)
 {
     vector<Token> expression = 
     {
-        {TokenType::INTEGER_LITERAL, "1"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "2"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "3"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "4"},
-        {TokenType::PLUS, "+"},
-        {TokenType::INTEGER_LITERAL, "5"}
+        {TokenTypes::INTEGER_LITERAL, "1"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "2"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "3"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "4"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::INTEGER_LITERAL, "5"}
     };
 
     unordered_map<string, variant<int, double, string>> variables = {};
@@ -301,9 +301,9 @@ TEST(NUMERIC_EvaluatorTest, mixed_variables_and_constants)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "x"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "PI"}
+        {TokenTypes::IDENTIFIER, "x"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "PI"}
     };
 
     unordered_map<string, variant<int, double, string>> variables = { {"x", 10.0} };
@@ -314,9 +314,9 @@ TEST(NUMERIC_EvaluatorTest, multiple_variables_multiplication)
 {
     vector<Token> expression = 
     {
-        { TokenType::IDENTIFIER, "x" },
-        { TokenType::MULTIPLY, "*" },
-        { TokenType::IDENTIFIER, "y" }
+        { TokenTypes::IDENTIFIER, "x" },
+        { TokenTypes::MULTIPLY, "*" },
+        { TokenTypes::IDENTIFIER, "y" }
     };
 
     unordered_map<string, variant<int, double, string>> variables = { {"x", 5.0}, {"y", 4.0} };
@@ -330,9 +330,9 @@ TEST(STRING_EvaluatorTest, can_evaluate_simple_expression)
 {
     vector<Token> expression =
     {
-        {TokenType:: STRING_LITERAL,"Hello, "},
-        {TokenType::PLUS, "+"},
-        {TokenType::STRING_LITERAL, "World!"}
+        {TokenTypes:: STRING_LITERAL,"Hello, "},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::STRING_LITERAL, "World!"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -343,9 +343,9 @@ TEST(STRING_EvaluatorTest, can_evaluate_simple_expression_with_variables)
 {
     vector<Token> expression =
     {
-        {TokenType::STRING_LITERAL,"Hello, "},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "str"}
+        {TokenTypes::STRING_LITERAL,"Hello, "},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "str"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"str","World!"}};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -356,9 +356,9 @@ TEST(STRING_EvaluatorTest, two_variables)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "str1"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "str2"}
+        {TokenTypes::IDENTIFIER, "str1"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "str2"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"str1", "Hello, "}, {"str2", "World!"} };
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -369,9 +369,9 @@ TEST(STRING_EvaluatorTest, variable_and_constant)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "greeting"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "planet"}
+        {TokenTypes::IDENTIFIER, "greeting"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "planet"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"greeting", "Hello, "} };
     unordered_map<string, variant<int, double, string>> constants = { {"planet", "World!"} };
@@ -382,9 +382,9 @@ TEST(STRING_EvaluatorTest, constant_and_variable)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "greeting"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "planet"}
+        {TokenTypes::IDENTIFIER, "greeting"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "planet"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"planet", "World!"} };
     unordered_map<string, variant<int, double, string>> constants = { {"greeting", "Hello, "} };
@@ -395,9 +395,9 @@ TEST(STRING_EvaluatorTest, constant_and_literal)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "greeting"},
-        {TokenType::PLUS, "+"},
-        {TokenType::STRING_LITERAL, "World!"}
+        {TokenTypes::IDENTIFIER, "greeting"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::STRING_LITERAL, "World!"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = { {"greeting", "Hello, "} };
@@ -408,9 +408,9 @@ TEST(STRING_EvaluatorTest, literal_and_constant)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, "Hello, "},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "planet"}
+        {TokenTypes::STRING_LITERAL, "Hello, "},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "planet"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = { {"planet", "World!"} };
@@ -421,9 +421,9 @@ TEST(STRING_EvaluatorTest, missing_variable_throws)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, "Hello, "},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "missing"}
+        {TokenTypes::STRING_LITERAL, "Hello, "},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "missing"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -433,9 +433,9 @@ TEST(STRING_EvaluatorTest, missing_variable_throws)
 TEST(STRING_EvaluatorTest, missing_constant_throws) 
 {
     vector<Token> expression = {
-        {TokenType::STRING_LITERAL, "Hello, "},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "missing"}
+        {TokenTypes::STRING_LITERAL, "Hello, "},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "missing"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -446,9 +446,9 @@ TEST(STRING_EvaluatorTest, invalid_operation_throws)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, "Hello"},
-        {TokenType::MINUS, "-"},
-        {TokenType::STRING_LITERAL, "World"}
+        {TokenTypes::STRING_LITERAL, "Hello"},
+        {TokenTypes::MINUS, "-"},
+        {TokenTypes::STRING_LITERAL, "World"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -458,9 +458,9 @@ TEST(STRING_EvaluatorTest, empty_string_literal)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, ""},
-        {TokenType::PLUS, "+"},
-        {TokenType::STRING_LITERAL, "World"}
+        {TokenTypes::STRING_LITERAL, ""},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::STRING_LITERAL, "World"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -470,9 +470,9 @@ TEST(STRING_EvaluatorTest, empty_string_variable)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, "Hello"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "empty"}
+        {TokenTypes::STRING_LITERAL, "Hello"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "empty"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"empty", ""} };
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -482,9 +482,9 @@ TEST(STRING_EvaluatorTest, empty_string_concat_empty_string)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, ""},
-        {TokenType::PLUS, "+"},
-        {TokenType::STRING_LITERAL, ""}
+        {TokenTypes::STRING_LITERAL, ""},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::STRING_LITERAL, ""}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -494,9 +494,9 @@ TEST(STRING_EvaluatorTest, variable_at_start)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "greeting"},
-        {TokenType::PLUS, "+"},
-        {TokenType::STRING_LITERAL, " World"}
+        {TokenTypes::IDENTIFIER, "greeting"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::STRING_LITERAL, " World"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"greeting", "Hello"} };
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -506,9 +506,9 @@ TEST(STRING_EvaluatorTest, constants_at_start)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "x"},
-        {TokenType::PLUS, "+"},
-        {TokenType::STRING_LITERAL, " World"}
+        {TokenTypes::IDENTIFIER, "x"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::STRING_LITERAL, " World"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = { {"x", "Hello"} };
@@ -518,9 +518,9 @@ TEST(STRING_EvaluatorTest, constants_and_variables)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "x"},
-        {TokenType::PLUS, "+"},
-        {TokenType::IDENTIFIER, "y"}
+        {TokenTypes::IDENTIFIER, "x"},
+        {TokenTypes::PLUS, "+"},
+        {TokenTypes::IDENTIFIER, "y"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"y", " World"} };
     unordered_map<string, variant<int, double, string>> constants = { {"x", "Hello"} };
@@ -530,7 +530,7 @@ TEST(STRING_EvaluatorTest, no_operations)
 {
     vector<Token> expression = 
     {
-        {TokenType::STRING_LITERAL, "Hello"}
+        {TokenTypes::STRING_LITERAL, "Hello"}
     };
     unordered_map<string, variant<int, double, string>> variables = {};
     unordered_map<string, variant<int, double, string>> constants = {};
@@ -541,7 +541,7 @@ TEST(STRING_EvaluatorTest, no_operations_variable)
 {
     vector<Token> expression = 
     {
-        {TokenType::IDENTIFIER, "greeting"}
+        {TokenTypes::IDENTIFIER, "greeting"}
     };
     unordered_map<string, variant<int, double, string>> variables = { {"greeting", "Hello"} };
     unordered_map<string, variant<int, double, string>> constants = {};

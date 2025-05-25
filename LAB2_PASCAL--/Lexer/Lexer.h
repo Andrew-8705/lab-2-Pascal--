@@ -35,26 +35,26 @@ private:
 
     vector<string> keywords = { "program", "const", "var", "begin", "end", "if", "then", "else", "mod", "div", "integer", "double", "string", "Write", "Read" };
 
-    TokenType getKeywordType(const string& lexeme) {
-        if (lexeme == "program") return TokenType::KEYWORD_PROGRAM;
-        if (lexeme == "const") return TokenType::KEYWORD_CONST;
-        if (lexeme == "var") return TokenType::KEYWORD_VAR;
-        if (lexeme == "begin") return TokenType::KEYWORD_BEGIN;
-        if (lexeme == "end") return TokenType::KEYWORD_END;
-        if (lexeme == "if") return TokenType::KEYWORD_IF;
-        if (lexeme == "then") return TokenType::KEYWORD_THEN;
-        if (lexeme == "else") return TokenType::KEYWORD_ELSE;
-        if (lexeme == "mod") return TokenType::KEYWORD_MOD;
-        if (lexeme == "div") return TokenType::KEYWORD_DIV;
-        if (lexeme == "integer") return TokenType::KEYWORD_INTEGER;
-        if (lexeme == "double") return TokenType::KEYWORD_DOUBLE;
-        if (lexeme == "string") return TokenType::KEYWORD_STRING;
-        if (lexeme == "Write") return TokenType::KEYWORD_WRITE;
-        if (lexeme == "Read") return TokenType::KEYWORD_READ;
-        return TokenType::UNKNOWN;
+    TokenTypes getKeywordType(const string& lexeme) {
+        if (lexeme == "program") return TokenTypes::KEYWORD_PROGRAM;
+        if (lexeme == "const") return TokenTypes::KEYWORD_CONST;
+        if (lexeme == "var") return TokenTypes::KEYWORD_VAR;
+        if (lexeme == "begin") return TokenTypes::KEYWORD_BEGIN;
+        if (lexeme == "end") return TokenTypes::KEYWORD_END;
+        if (lexeme == "if") return TokenTypes::KEYWORD_IF;
+        if (lexeme == "then") return TokenTypes::KEYWORD_THEN;
+        if (lexeme == "else") return TokenTypes::KEYWORD_ELSE;
+        if (lexeme == "mod") return TokenTypes::KEYWORD_MOD;
+        if (lexeme == "div") return TokenTypes::KEYWORD_DIV;
+        if (lexeme == "integer") return TokenTypes::KEYWORD_INTEGER;
+        if (lexeme == "double") return TokenTypes::KEYWORD_DOUBLE;
+        if (lexeme == "string") return TokenTypes::KEYWORD_STRING;
+        if (lexeme == "Write") return TokenTypes::KEYWORD_WRITE;
+        if (lexeme == "Read") return TokenTypes::KEYWORD_READ;
+        return TokenTypes::UNKNOWN;
     }
 
-    Token createToken(TokenType type, const string& value) const {
+    Token createToken(TokenTypes type, const string& value) const {
         return Token(type, value, curLine, tokenStartColumn);
     }
 
@@ -117,16 +117,16 @@ private:
                     curPos++;
                     curColumn++;
                     switch (currentChar) {
-                    case '+': return createToken(TokenType::PLUS, currentLexeme);
-                    case '-': return createToken(TokenType::MINUS, currentLexeme);
-                    case '*': return createToken(TokenType::MULTIPLY, currentLexeme);
-                    case '/': return createToken(TokenType::DIVIDE, currentLexeme);
-                    case '=': return createToken(TokenType::EQUAL, currentLexeme);
-                    case ';': return createToken(TokenType::SEMICOLON, currentLexeme);
-                    case ',': return createToken(TokenType::COMMA, currentLexeme);
-                    case '(': return createToken(TokenType::LEFT_PAREN, currentLexeme);
-                    case ')': return createToken(TokenType::RIGHT_PAREN, currentLexeme);
-                    case '.': return createToken(TokenType::UNKNOWN, currentLexeme); // Точка сама по себе
+                    case '+': return createToken(TokenTypes::PLUS, currentLexeme);
+                    case '-': return createToken(TokenTypes::MINUS, currentLexeme);
+                    case '*': return createToken(TokenTypes::MULTIPLY, currentLexeme);
+                    case '/': return createToken(TokenTypes::DIVIDE, currentLexeme);
+                    case '=': return createToken(TokenTypes::EQUAL, currentLexeme);
+                    case ';': return createToken(TokenTypes::SEMICOLON, currentLexeme);
+                    case ',': return createToken(TokenTypes::COMMA, currentLexeme);
+                    case '(': return createToken(TokenTypes::LEFT_PAREN, currentLexeme);
+                    case ')': return createToken(TokenTypes::RIGHT_PAREN, currentLexeme);
+                    case '.': return createToken(TokenTypes::UNKNOWN, currentLexeme); // Точка сама по себе
                     default:
                         throw runtime_error("Error: Unknown token '" + currentLexeme + "' at line " + to_string(curLine) + ", column " + to_string(tokenStartColumn));
                     }
@@ -145,12 +145,12 @@ private:
                         currentLexeme += sourceCode[curPos];
                         curPos++;
                         curColumn++;
-                        return createToken(TokenType::END_OF_PROGRAM, currentLexeme);
+                        return createToken(TokenTypes::END_OF_PROGRAM, currentLexeme);
                     }
                     else {
-                        TokenType type = getKeywordType(currentLexeme);
-                        if (type == TokenType::UNKNOWN) {
-                            type = TokenType::IDENTIFIER;
+                        TokenTypes type = getKeywordType(currentLexeme);
+                        if (type == TokenTypes::UNKNOWN) {
+                            type = TokenTypes::IDENTIFIER;
                         }
                         return createToken(type, currentLexeme);
                     }
@@ -171,7 +171,7 @@ private:
                 }
                 else {
                     state = LexerState::START;
-                    return createToken(TokenType::INTEGER_LITERAL, currentLexeme);
+                    return createToken(TokenTypes::INTEGER_LITERAL, currentLexeme);
                 }
                 break;
 
@@ -183,7 +183,7 @@ private:
                 }
                 else {
                     state = LexerState::START;
-                    return createToken(TokenType::DOUBLE_LITERAL, currentLexeme);
+                    return createToken(TokenTypes::DOUBLE_LITERAL, currentLexeme);
                 }
                 break;
 
@@ -192,7 +192,7 @@ private:
                 curColumn++;
                 if (currentChar == '"') {
                     state = LexerState::START;
-                    return createToken(TokenType::STRING_LITERAL, currentLexeme);
+                    return createToken(TokenTypes::STRING_LITERAL, currentLexeme);
                 }
                 currentLexeme += currentChar;
                 if (curPos >= sourceCode.length()) {
@@ -206,10 +206,10 @@ private:
                 curColumn++;
                 state = LexerState::START;
                 if (currentChar == '=') {
-                    return createToken(TokenType::ASSIGN, currentLexeme);
+                    return createToken(TokenTypes::ASSIGN, currentLexeme);
                 }
                 else {
-                    return createToken(TokenType::COLON, currentLexeme.substr(0, 1)); // Вернуть только ':'
+                    return createToken(TokenTypes::COLON, currentLexeme.substr(0, 1)); // Вернуть только ':'
                 }
 
             case LexerState::GREATER_THAN:
@@ -218,11 +218,11 @@ private:
                     curPos++;
                     curColumn++;
                     state = LexerState::START;
-                    return createToken(TokenType::GREATER_OR_EQUAL, currentLexeme);
+                    return createToken(TokenTypes::GREATER_OR_EQUAL, currentLexeme);
                 }
                 else {
                     state = LexerState::START;
-                    return createToken(TokenType::GREATER, currentLexeme);
+                    return createToken(TokenTypes::GREATER, currentLexeme);
                 }
                 break;
 
@@ -232,18 +232,18 @@ private:
                     curPos++;
                     curColumn++;
                     state = LexerState::START;
-                    return createToken(TokenType::LESS_OR_EQUAL, currentLexeme);
+                    return createToken(TokenTypes::LESS_OR_EQUAL, currentLexeme);
                 }
                 else if (curPos < sourceCode.length() && sourceCode[curPos] == '>') {
                     currentLexeme += sourceCode[curPos];
                     curPos++;
                     curColumn++;
                     state = LexerState::START;
-                    return createToken(TokenType::NON_EQUAL, currentLexeme);
+                    return createToken(TokenTypes::NON_EQUAL, currentLexeme);
                 }
                 else {
                     state = LexerState::START;
-                    return createToken(TokenType::LESS, currentLexeme);
+                    return createToken(TokenTypes::LESS, currentLexeme);
                 }
                 break;
             }
@@ -252,24 +252,24 @@ private:
         if (!currentLexeme.empty()) {
             switch (state) {
             case LexerState::IDENTIFIER: {
-                TokenType type = getKeywordType(currentLexeme);
-                if (type == TokenType::UNKNOWN) {
-                    type = TokenType::IDENTIFIER;
+                TokenTypes type = getKeywordType(currentLexeme);
+                if (type == TokenTypes::UNKNOWN) {
+                    type = TokenTypes::IDENTIFIER;
                 }
                 state = LexerState::START;
                 return createToken(type, currentLexeme);
             }
             case LexerState::INTEGER:
                 state = LexerState::START;
-                return createToken(TokenType::INTEGER_LITERAL, currentLexeme);
+                return createToken(TokenTypes::INTEGER_LITERAL, currentLexeme);
             case LexerState::DOUBLE:
                 state = LexerState::START;
-                return createToken(TokenType::DOUBLE_LITERAL, currentLexeme);
+                return createToken(TokenTypes::DOUBLE_LITERAL, currentLexeme);
             case LexerState::STRING:
                 throw runtime_error("Error: Unterminated string literal at line " + to_string(curLine) + ", column " + to_string(tokenStartColumn));
             case LexerState::ASSIGN:
                 state = LexerState::START;
-                return createToken(TokenType::COLON, currentLexeme.substr(0, 1)); // обработка ':' без '='
+                return createToken(TokenTypes::COLON, currentLexeme.substr(0, 1)); // обработка ':' без '='
             default:
                 // в состоянии START ничего не должно оставаться
                 break;
