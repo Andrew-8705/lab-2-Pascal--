@@ -1,5 +1,6 @@
 #pragma once
 #include <msclr/marshal_cppstd.h>
+#include <regex>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -49,6 +50,7 @@ namespace Project1 {
 		}
 	private: System::Windows::Forms::TextBox^ textBox1;
 	private: System::Windows::Forms::Button^ button1;
+	private: System::Windows::Forms::RichTextBox^ richTextBox1;
 	protected:
 
 	private:
@@ -66,49 +68,140 @@ namespace Project1 {
 		{
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->richTextBox1 = (gcnew System::Windows::Forms::RichTextBox());
 			this->SuspendLayout();
 			// 
 			// textBox1
 			// 
 			this->textBox1->Font = (gcnew System::Drawing::Font(L"Consolas", 24, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->textBox1->Location = System::Drawing::Point(56, 40);
+			this->textBox1->Location = System::Drawing::Point(1730, 1158);
 			this->textBox1->Multiline = true;
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Both;
-			this->textBox1->Size = System::Drawing::Size(937, 752);
-			this->textBox1->TabIndex = 0;
+			this->textBox1->Size = System::Drawing::Size(44, 211);
+			this->textBox1->TabIndex = 2;
+			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged);
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(1098, 395);
+			this->button1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
+			this->button1->Font = (gcnew System::Drawing::Font(L"Consolas", 10.125F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->button1->Location = System::Drawing::Point(1401, 708);
 			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(215, 210);
+			this->button1->Size = System::Drawing::Size(185, 106);
 			this->button1->TabIndex = 1;
-			this->button1->Text = L"button1";
+			this->button1->Text = L"Run";
 			this->button1->UseVisualStyleBackColor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
+			// 
+			// richTextBox1
+			// 
+			this->richTextBox1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
+				| System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->richTextBox1->Font = (gcnew System::Drawing::Font(L"Cascadia Mono", 24, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->richTextBox1->Location = System::Drawing::Point(56, 30);
+			this->richTextBox1->Name = L"richTextBox1";
+			this->richTextBox1->Size = System::Drawing::Size(1194, 540);
+			this->richTextBox1->TabIndex = 0;
+			this->richTextBox1->Text = L"";
+			this->richTextBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::richTextBox1_TextChanged);
+			this->richTextBox1->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::richTextBox1_KeyDown);
+			this->richTextBox1->KeyUp += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::richTextBox1_KeyUp);
+			this->richTextBox1->PreviewKeyDown += gcnew System::Windows::Forms::PreviewKeyDownEventHandler(this, &MyForm::richTextBox1_PreviewKeyDown);
+			this->richTextBox1->MouseWheel += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::richTextBox1_MouseWheel);
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(12, 25);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1337, 904);
+			this->ClientSize = System::Drawing::Size(1792, 995);
+			this->Controls->Add(this->richTextBox1);
 			this->Controls->Add(this->button1);
 			this->Controls->Add(this->textBox1);
 			this->Name = L"MyForm";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"MyForm";
+			this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
+			this->KeyUp += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyUp);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
 		}
 #pragma endregion
+	private: void HighlightKeyword(String^ keyword, Color color) {
+		String^ pattern = "\\b" + keyword + "\\b"; // "\\b" - граница слова (word boundary)
+		System::Text::RegularExpressions::Regex^ regex = gcnew System::Text::RegularExpressions::Regex(pattern);
+
+		System::Text::RegularExpressions::MatchCollection^ matches = regex->Matches(richTextBox1->Text);
+
+		for (int i = 0; i < matches->Count; ++i) {
+			System::Text::RegularExpressions::Match^ match = matches[i];
+			richTextBox1->SelectionStart = match->Index;
+			richTextBox1->SelectionLength = match->Length;
+			richTextBox1->SelectionColor = color;
+		}
+	}
+	private: System::Void richTextBox1_TextChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		int selectionStart = richTextBox1->SelectionStart;
+		int selectionLength = richTextBox1->SelectionLength;
+
+		// Убираем выделение, чтобы не повлиять на форматирование
+		richTextBox1->SelectAll();
+		richTextBox1->SelectionColor = Color::Black; // Сбрасываем цвет
+		richTextBox1->SelectionFont = gcnew System::Drawing::Font(richTextBox1->Font, FontStyle::Regular); // Сбрасываем стиль
+
+		// Ключевые слова (пример)
+		HighlightKeyword("program", Color::Orange);
+		HighlightKeyword("begin", Color::Purple);
+		HighlightKeyword("const", Color::Blue);
+		HighlightKeyword("var", Color::Blue);
+		HighlightKeyword("end", Color::Purple);
+		HighlightKeyword("end.", Color::Blue);
+		HighlightKeyword("Write", Color::SkyBlue);
+		HighlightKeyword("Read", Color::SkyBlue);
+		HighlightKeyword("if", Color::Red);
+		HighlightKeyword("else", Color::Red);
+		HighlightKeyword("then", Color::Red);
+		HighlightKeyword("int", Color::DarkBlue);
+		HighlightKeyword("double", Color::DarkBlue);
+		HighlightKeyword("string", Color::DarkBlue);
+		HighlightStringLiterals(Color::Green);
+		//Восстанавливаем позицию курсора
+		richTextBox1->SelectionStart = selectionStart;
+		richTextBox1->SelectionLength = selectionLength;
+		richTextBox1->SelectionColor = Color::Black;
+	}
+	private: void HighlightStringLiterals(Color color)
+	{
+		String^ pattern = "\"(.*?)\"";
+
+		System::Text::RegularExpressions::Regex^ regex = gcnew System::Text::RegularExpressions::Regex(pattern);
+		System::Text::RegularExpressions::MatchCollection^ matches = regex->Matches(richTextBox1->Text);
+
+		for (int i = 0; i < matches->Count; ++i) {
+			System::Text::RegularExpressions::Match^ match = matches[i];
+			richTextBox1->SelectionStart = match->Index;
+			richTextBox1->SelectionLength = match->Length;
+			richTextBox1->SelectionColor = color;
+		}
+	}
+	private: System::Void richTextBox1_PreviewKeyDown(System::Object^ sender, System::Windows::Forms::PreviewKeyDownEventArgs^ e) {
+		if (e->KeyCode == Keys::Tab) {
+			e->IsInputKey = true;
+		}
+	}
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e)
 	{	
 		try
 		{
-			System::String^ text = textBox1->Text;
-
+			//System::String^ text = textBox1->Text;
+			System::String^ text = richTextBox1->Text;
 			//MessageBox::Show(text);
 
 			std::string PascalCode = msclr::interop::marshal_as<std::string>(text);
@@ -132,6 +225,69 @@ namespace Project1 {
 	}
 		   
 
-		   
-	};
+	private: bool ctrlKeyPressed = false;
+	private: System::Void MyForm_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e)
+	{
+		if (e->KeyCode == Keys::ControlKey)
+		{
+			ctrlKeyPressed = true;
+		}
+	}
+	private: System::Void MyForm_KeyUp(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e)
+	{
+		if (e->KeyCode == Keys::ControlKey)
+		{
+			ctrlKeyPressed = false;
+		}
+	}
+	private: System::Void richTextBox1_MouseWheel(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+	{
+		if (ctrlKeyPressed) {
+			float currentSize = textBox1->Font->Size;
+			float newSize = currentSize;
+
+			// Увеличиваем размер шрифта, если колесико мыши прокручено вверх
+			if (e->Delta > 0) {
+				newSize += 1.0f; // Шаг изменения размера шрифта
+			}
+			// Уменьшаем размер шрифта, если колесико мыши прокручено вниз
+			else {
+				newSize -= 1.0f;
+			}
+
+			// Проверка на минимальный и максимальный размер шрифта (опционально)
+			if (newSize < 6.0f) newSize = 6.0f;
+			if (newSize > 72.0f) newSize = 72.0f;
+
+			richTextBox1->Font = gcnew System::Drawing::Font(richTextBox1->Font->FontFamily, newSize, richTextBox1->Font->Style);
+
+			// Предотвращаем прокрутку TextBox, чтобы прокручивался только шрифт
+			//((HandledEventArgs^)e)->Handled = true;
+		}
+	}
+	private: System::Void richTextBox1_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e)
+	{
+		if (e->KeyCode == Keys::ControlKey)
+		{
+			ctrlKeyPressed = true;
+		}
+
+		if (e->KeyCode == Keys::Tab)
+		{	
+			MessageBox::Show("adad");
+			richTextBox1->SelectedText = "\t";
+			e->Handled = true;
+			e->SuppressKeyPress = true;
+		}
+	}
+	private: System::Void richTextBox1_KeyUp(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e)
+	{
+		if (e->KeyCode == Keys::ControlKey)
+		{
+			ctrlKeyPressed = false;
+		}
+	}
+private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+}
+};
 }
