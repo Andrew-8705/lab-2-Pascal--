@@ -48,7 +48,7 @@ namespace Project1 {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::TextBox^ textBox1;
+
 	private: System::Windows::Forms::Button^ button1;
 	private: System::Windows::Forms::RichTextBox^ richTextBox1;
 	protected:
@@ -66,22 +66,9 @@ namespace Project1 {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->richTextBox1 = (gcnew System::Windows::Forms::RichTextBox());
 			this->SuspendLayout();
-			// 
-			// textBox1
-			// 
-			this->textBox1->Font = (gcnew System::Drawing::Font(L"Consolas", 24, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(0)));
-			this->textBox1->Location = System::Drawing::Point(1730, 1158);
-			this->textBox1->Multiline = true;
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Both;
-			this->textBox1->Size = System::Drawing::Size(44, 211);
-			this->textBox1->TabIndex = 2;
-			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged);
 			// 
 			// button1
 			// 
@@ -111,8 +98,8 @@ namespace Project1 {
 			this->richTextBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::richTextBox1_TextChanged);
 			this->richTextBox1->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::richTextBox1_KeyDown);
 			this->richTextBox1->KeyUp += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::richTextBox1_KeyUp);
-			this->richTextBox1->PreviewKeyDown += gcnew System::Windows::Forms::PreviewKeyDownEventHandler(this, &MyForm::richTextBox1_PreviewKeyDown);
 			this->richTextBox1->MouseWheel += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::richTextBox1_MouseWheel);
+			this->richTextBox1->PreviewKeyDown += gcnew System::Windows::Forms::PreviewKeyDownEventHandler(this, &MyForm::richTextBox1_PreviewKeyDown);
 			// 
 			// MyForm
 			// 
@@ -121,7 +108,6 @@ namespace Project1 {
 			this->ClientSize = System::Drawing::Size(1792, 995);
 			this->Controls->Add(this->richTextBox1);
 			this->Controls->Add(this->button1);
-			this->Controls->Add(this->textBox1);
 			this->Name = L"MyForm";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"MyForm";
@@ -129,7 +115,6 @@ namespace Project1 {
 			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
 			this->KeyUp += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyUp);
 			this->ResumeLayout(false);
-			this->PerformLayout();
 
 		}
 #pragma endregion
@@ -215,12 +200,13 @@ namespace Project1 {
 
 			Interpreter inter(ast);
 
+			system("cls");
 			inter.run();
 		}
 		catch (const std::exception& e)
 		{
 			System::String^ errorMessage = gcnew System::String(e.what());
-			MessageBox::Show("Ошибка: " + errorMessage, "Ошибка интегрирования!", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			MessageBox::Show("Ошибка: " + errorMessage, "Ошибка программы", MessageBoxButtons::OK, MessageBoxIcon::Error);
 		}
 	}
 		   
@@ -243,7 +229,7 @@ namespace Project1 {
 	private: System::Void richTextBox1_MouseWheel(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
 	{
 		if (ctrlKeyPressed) {
-			float currentSize = textBox1->Font->Size;
+			float currentSize = richTextBox1->Font->Size;
 			float newSize = currentSize;
 
 			// Увеличиваем размер шрифта, если колесико мыши прокручено вверх
@@ -273,8 +259,7 @@ namespace Project1 {
 		}
 
 		if (e->KeyCode == Keys::Tab)
-		{	
-			MessageBox::Show("adad");
+		{
 			richTextBox1->SelectedText = "\t";
 			e->Handled = true;
 			e->SuppressKeyPress = true;
